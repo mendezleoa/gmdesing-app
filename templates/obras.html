@@ -1,9 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Obras</title>
-</head>
-<body>
+{% extends "index.html" %}
+{% block content %}
     <h1>Lista de Obras</h1>
     <ul>
         {% for obra in obras %}
@@ -11,4 +7,4 @@
         {% endfor %}
     </ul>
     <a href="{{ url_for('crear_obra') }}">Crear Nueva Obra</a>
-</body>
+{% endblock %}

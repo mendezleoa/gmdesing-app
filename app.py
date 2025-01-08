@@ -24,7 +24,7 @@ datos = {
 @app.route('/obras')
 def index():
     obras = Obra.query.all()
-    return render_template('obras.html', obras=obras) # Pasa las obras a la plantilla
+    return render_template('obras.html', obras=obras, datos=datos) # Pasa las obras a la plantilla
 
 @app.route('/obras/crear', methods=['GET', 'POST'])
 def crear_obra():
