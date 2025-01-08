@@ -1,10 +1,39 @@
-{% extends "index.html" %}
+{% extends 'base.html' %}
 {% block content %}
     <h1>Lista de Obras</h1>
-    <ul>
-        {% for obra in obras %}
-        <li>{{ obra.nombre_obra }} - {{ obra.descripcion_obra }} - {{ obra.fecha_inicio }}</li>
-        {% endfor %}
-    </ul>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if obras %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Fecha de Inicio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obra in obras %}
+            <tr>
+                <td>{{ obra.nombre_obra }}</td>
+                <td>{{ obra.descripcion_obra }}</td>
+                <td>{{ obra.fecha_inicio }}</td>
+                <td><a href="{{ url_for('ver_obra', id_obra=obra.id_obra) }}">Ver Detalles</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No hay obras registradas.</p>
+    {% endif %}
+
     <a href="{{ url_for('crear_obra') }}">Crear Nueva Obra</a>
 {% endblock %}
