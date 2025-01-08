@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Website{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> <!-- Use the compiled CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> <!-- Mis estilos -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('mobile-sidebar');
+            sidebar.classList.toggle('translate-x-full');
+        }
+    </script>
+</head>
+
+<body class="base grid grid-cols-12 gap-2 p-2 h-[100vh]">
+    <!-- Navigation Menu -->
+    <nav class="nav col-span-12 text-white p-4 flex justify-between items-center h-[10vh]">
+        <div class="flex justify-start items-center gap-2">
+            <div class="flex justify-center items-center w-20 h-20 bg-blue-950 rounded-full">
+                <h1>logo</h1>
+            </div>
+            <h1>{{datos.sistema}}</h1>
+        </div>
+        <div class="flex justify-end items-center gap-2">
+            <h3>{{datos.usuario}}</h3>
+            <img class="rounded-full hidden md:block w-14" bg-black src="/static/img/perfil.png" alt="">
+            <button class="md:hidden text-blue-50" onclick="toggleSidebar()">☰</button> <!-- Hamburger button -->
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="aside col-span-2 h[90vh] p-4 hidden md:block md:col-span-2">
+        {% block sidebar %}
+        <h2>Sidebar</h2>
+        {% endblock %}
+    </aside>
+
+    <!-- Mobile Sidebar -->
+    <aside id="mobile-sidebar"
+        class="fixed inset-y-0 right-0 w-64 bg-blue-950 text-blue-50 transform translate-x-full transition-transform duration-300 ease-in-out md:hidden"">
+       <div class=" bg-blue-900 p-4 text-blue-50">
+        <div class="flex justify-between items-start mb-4"> <!-- Flex container for the close button -->
+            <img class="rounded-full w-[30%]" bg-black src="/static/img/perfil.jpg" alt="">
+            <button class="text-right" onclick="toggleSidebar()">✖</button> <!-- Close button -->
+        </div>
+        <div class="flex justify-between items-center mb-4"> <!-- Flex container for the close button -->
+
+            <h3>{{datos.usuario}}</h3>
+        </div>
+        </div>
+        <div class="p-4">
+            {% block SidebarMovile %}
+            <h2>Sidebar</h2>
+            {% endblock %}
+        </div>
+
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content col-span-12 md:col-span-10 h-[90vh] p-4 overflow-y-auto scroll-hidden">
+        {% block content %}
+        <h2>Main Content Area</h2>
+        {% endblock %}
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </main>
+</body>
+
+</html>

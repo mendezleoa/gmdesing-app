@@ -1,0 +1,7 @@
+/* Ocultar la barra de desplazamiento pero mantener la funcionalidad */
+.scroll-hidden {
+    overflow-y: scroll; /* Permite el desplazamiento vertical */
+}
+
+.scroll-hidden::-webkit-scrollbar {
+    display: none; /* Oculta la barra de desplazamiento en WebKit (Chrome, Safari) */

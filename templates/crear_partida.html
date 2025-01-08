@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Crear Partida para {{ obra.nombre_obra }}</h1>
+<form method="POST">
+    {{ form.csrf_token }}
+    {{ form.nombre_partida.label }} {{ form.nombre_partida }}<br>
+    {{ form.descripcion_partida.label }} {{ form.descripcion_partida }}<br>
+    {{ form.submit }}
+</form>
+
+{% endblock %}

@@ -1,0 +1,13 @@
+{% macro render_nav(items, active_route) %}
+<nav class="bg-gray-800 p-4">
+    <ul class="flex space-x-4">
+        {% for item in items %}
+            <li>
+                <a href="{{ item.url }}" class="{% if item.url == active_route %}text-white font-bold{% else %}text-gray-300{% endif %}">
+                    {{ item.name }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</nav>
+{% endmacro %}

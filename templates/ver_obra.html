@@ -1,0 +1,23 @@
+{% extends 'base.html' %} {# Si tienes una plantilla base #}
+{% block content %}
+<h1>{{ obra.nombre_obra }}</h1>
+<p>{{ obra.descripcion_obra }}</p>
+<p>Fecha de inicio: {{ obra.fecha_inicio }}</p>
+
+<h2>Partidas:</h2>
+{% if obra.partidas %}
+<ul>
+    {% for partida in obra.partidas %}
+    <li>{{ partida.nombre_partida }} - {{ partida.descripcion_partida }}
+        <a href="{{ url_for('crear_mano_obra', id_partida=partida.id_partida) }}">Agregar Mano de Obra</a>
+        <a href="{{ url_for('crear_herramienta', id_partida=partida.id_partida) }}">Agregar Herramienta</a>
+        <a href="{{ url_for('crear_material', id_partida=partida.id_partida) }}">Agregar Material</a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No hay partidas registradas para esta obra.</p>
+{% endif %}
+<a href="{{ url_for('crear_partida', id_obra=obra.id_obra) }}">Crear Nueva Partida</a>
+<a href="{{ url_for('index') }}">Volver a la lista de obras</a>
+{% endblock %}

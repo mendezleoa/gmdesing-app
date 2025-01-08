@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crear Obra</title>
+</head>
+<body>
+    <h1>Crear Nueva Obra</h1>
+    <form method="POST">
+        {{ form.csrf_token }} {# Esto es importante para la seguridad #}
+        {{ form.nombre_obra.label }} {{ form.nombre_obra }}<br>
+        {{ form.descripcion_obra.label }} {{ form.descripcion_obra }}<br>
+        {{ form.fecha_inicio.label }} {{ form.fecha_inicio }}<br>
+        {{ form.submit }}
+    </form>
+</body>
+</html>

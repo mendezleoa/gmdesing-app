@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% import 'componentes/nav.html' as nav %}
+{% import 'componentes/sidebar.html' as sidebar %}
+
+{% block title %}Página Principal{% endblock %}
+
+{% block nav %}
+    {% set nav_items = [
+        {"name": "Inicio", "url": "/"},
+        {"name": "Acerca de", "url": "/about"},
+        {"name": "Acerca de", "url": "/about"},
+        {"name": "Contacto", "url": "/contact"}
+    ] %}
+    {{ nav.render_nav(items=nav_items, active_route=active_route) }}
+{% endblock %}
+
+{% block sidebar %}
+    {% set sidebar_items = [
+        {"name": "Dashboard", "url": "/dashboard"},
+        {"name": "Configuración", "url": "/settings"},
+        {"name": "Perfil", "url": "/profile"}
+    ] %}
+    {{ sidebar.render_sidebar(sidebar_items=sidebar_items, active_route=active_route) }}
+{% endblock %}
+
+{% block SidebarMovile %}
+    {% set sidebar_items = [
+        {"name": "Dashboard", "url": "/dashboard"},
+        {"name": "Configuración", "url": "/settings"},
+        {"name": "Perfil", "url": "/profile"}
+    ] %}
+    {{ sidebar.render_sidebar(sidebar_items=sidebar_items, active_route=active_route) }}
+{% endblock %}
+
+{% block content %}
+    <h2 class="text-2xl font-semibold">¡Bienvenido a Mi Sitio Web!</h2>
+    <p class="mt-2">Este es el contenido de la página principal.</p>
+{% endblock %}
+

@@ -1,0 +1,14 @@
+{% macro render_sidebar(sidebar_items, active_route) %}
+<div class="sidebar">
+    <h2 class="font-bold">Menú</h2>
+    <ul class="mt-2">
+        {% for item in sidebar_items %}
+            <li class="my-2">
+                <a href="{{ item.url }}" class="{% if item.url == active_route %}text-blue-800 font-semibold{% else %}text-blue-50{% endif %}">
+                    {{ item.name }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endmacro %}
