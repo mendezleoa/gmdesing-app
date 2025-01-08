@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Agregar Herramienta a {{ partida.nombre_partida }}</h1>
+    <form method="POST">
+        {{ form.csrf_token }}
+        {{ form.nombre_herramienta.label }} {{ form.nombre_herramienta }}<br>
+        {{ form.costo_alquiler_dia.label }} {{ form.costo_alquiler_dia }}<br>
+        {{ form.submit }}
+    </form>
+    <a href="{{ url_for('ver_partida', id_partida=partida.id_partida) }}">Volver a la partida</a>
+{% endblock %}

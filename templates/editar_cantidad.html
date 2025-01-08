@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Editar {{ elemento }} para {{ partida.nombre_partida }}</h1>
+    <form method="POST">
+        {{ form.csrf_token }}
+        {{ form.cantidad.label }} {{ form.cantidad }}<br>
+        {{ form.submit }}
+    </form>
+        <a href="{{ url_for('ver_partida', id_partida=partida.id_partida) }}">Volver a la partida</a>
+{% endblock %}

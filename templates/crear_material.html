@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Agregar Material a {{ partida.nombre_partida }}</h1>
+    <form method="POST">
+        {{ form.csrf_token }}
+        {{ form.nombre_material.label }} {{ form.nombre_material }}<br>
+        {{ form.unidad_medida.label }} {{ form.unidad_medida }}<br>
+        {{ form.precio_unitario.label }} {{ form.precio_unitario }}<br>
+        {{ form.submit }}
+    </form>
+    <a href="{{ url_for('ver_partida', id_partida=partida.id_partida) }}">Volver a la partida</a>
+{% endblock %}

@@ -2,7 +2,7 @@ from flask import Flask, flash, render_template, Blueprint,abort,request, redire
 from jinja2 import TemplateNotFound
 
 from flask_sqlalchemy import SQLAlchemy
-from forms import ObraForm, PartidaForm, ManoObraForm # Importa tus formularios
+from forms import CantidadDiasForm, CantidadHorasForm, CantidadMaterialForm, HerramientaForm, MaterialForm, ObraForm, PartidaForm, ManoObraForm # Importa tus formularios
 import os
 
 
@@ -57,6 +57,7 @@ def crear_partida(id_obra):
         return redirect(url_for('ver_obra', id_obra=id_obra)) # Redirige a la vista de la obra
     return render_template('crear_partida.html', form=form, obra=obra, datos=datos) # Pasa la obra a la plantilla
 
+#Ruta para ver partida
 @app.route('/partida/<int:id_partida>')
 def ver_partida(id_partida):
     partida = Partida.query.get_or_404(id_partida)
@@ -93,7 +94,105 @@ def crear_mano_obra(id_partida):
             flash('Mano de obra creada y agregada a la partida.', 'success')
             return redirect(url_for('ver_partida', id_partida=id_partida))
 
-    return render_template('crear_mano_obra.html', form=form, partida=partida)
+    return render_template('crear_mano_obra.html', form=form, partida=partida, datos=datos)
+
+# Rutas para Herramientas
+@app.route('/partida/<int:id_partida>/herramienta/crear', methods=['GET', 'POST'])
+def crear_herramienta(id_partida):
+    partida = Partida.query.get_or_404(id_partida)
+    form = HerramientaForm()
+    if form.validate_on_submit():
+        herramienta_existente = Herramienta.query.filter_by(nombre_herramienta=form.nombre_herramienta.data).first()
+        if herramienta_existente:
+            partida_herramienta_existente = PartidasHerramientas.query.filter_by(id_partida=id_partida, id_herramienta=herramienta_existente.id_herramienta).first()
+            if partida_herramienta_existente:
+                flash('Esta herramienta ya está agregada a esta partida.', 'warning')
+                return redirect(url_for('ver_partida', id_partida=id_partida))
+            else:
+                nueva_relacion = PartidasHerramientas(id_partida=id_partida, id_herramienta=herramienta_existente.id_herramienta, cantidad_dias=0)
+                db.session.add(nueva_relacion)
+                db.session.commit()
+                flash('Herramienta agregada a la partida.', 'success')
+                return redirect(url_for('ver_partida', id_partida=id_partida))
+        else:
+            nueva_herramienta = Herramienta(
+                nombre_herramienta=form.nombre_herramienta.data,
+                costo_alquiler_dia=form.costo_alquiler_dia.data
+            )
+            db.session.add(nueva_herramienta)
+            db.session.commit()
+            nueva_relacion = PartidasHerramientas(id_partida=id_partida, id_herramienta=nueva_herramienta.id_herramienta, cantidad_dias=0)
+            db.session.add(nueva_relacion)
+            db.session.commit()
+            flash('Herramienta creada y agregada a la partida.', 'success')
+            return redirect(url_for('ver_partida', id_partida=id_partida))
+    return render_template('crear_herramienta.html', form=form, partida=partida, datos=datos)
+
+# Rutas para Materiales
+@app.route('/partida/<int:id_partida>/material/crear', methods=['GET', 'POST'])
+def crear_material(id_partida):
+    partida = Partida.query.get_or_404(id_partida)
+    form = MaterialForm()
+    if form.validate_on_submit():
+        material_existente = Material.query.filter_by(nombre_material=form.nombre_material.data).first()
+        if material_existente:
+            partida_material_existente = PartidasMateriales.query.filter_by(id_partida=id_partida, id_material=material_existente.id_material).first()
+            if partida_material_existente:
+                flash('Este material ya está agregado a esta partida.', 'warning')
+                return redirect(url_for('ver_partida', id_partida=id_partida))
+            else:
+                nueva_relacion = PartidasMateriales(id_partida=id_partida, id_material=material_existente.id_material, cantidad=0)
+                db.session.add(nueva_relacion)
+                db.session.commit()
+                flash('Material agregado a la partida.', 'success')
+                return redirect(url_for('ver_partida', id_partida=id_partida))
+        else:
+            nuevo_material = Material(
+                nombre_material=form.nombre_material.data,
+                unidad_medida=form.unidad_medida.data,
+                precio_unitario=form.precio_unitario.data
+            )
+            db.session.add(nuevo_material)
+            db.session.commit()
+            nueva_relacion = PartidasMateriales(id_partida=id_partida, id_material=nuevo_material.id_material, cantidad=0)
+            db.session.add(nueva_relacion)
+            db.session.commit()
+            flash('Material creado y agregado a la partida.', 'success')
+            return redirect(url_for('ver_partida', id_partida=id_partida))
+    return render_template('crear_material.html', form=form, partida=partida, datos=datos)
+
+@app.route('/partida/<int:id_partida>/mano_obra/<int:id_mano_obra>/editar', methods=['GET', 'POST'])
+def editar_mano_obra_partida(id_partida, id_mano_obra):
+    partida_mano_obra = PartidasManoObra.query.filter_by(id_partida=id_partida, id_mano_obra=id_mano_obra).first_or_404()
+    form = CantidadHorasForm(obj=partida_mano_obra) # Pre-carga el formulario con los datos existentes
+    if form.validate_on_submit():
+        partida_mano_obra.cantidad_horas = form.cantidad_horas.data
+        db.session.commit()
+        flash('Cantidad de horas actualizada.', 'success')
+        return redirect(url_for('ver_partida', id_partida=id_partida))
+    return render_template('editar_cantidad.html', form=form, elemento="horas de mano de obra", partida=partida_mano_obra.partida)
+
+@app.route('/partida/<int:id_partida>/herramienta/<int:id_herramienta>/editar', methods=['GET', 'POST'])
+def editar_herramienta_partida(id_partida, id_herramienta):
+    partida_herramienta = PartidasHerramientas.query.filter_by(id_partida=id_partida, id_herramienta=id_herramienta).first_or_404()
+    form = CantidadDiasForm(obj=partida_herramienta)
+    if form.validate_on_submit():
+        partida_herramienta.cantidad_dias = form.cantidad_dias.data
+        db.session.commit()
+        flash('Cantidad de días actualizada.', 'success')
+        return redirect(url_for('ver_partida', id_partida=id_partida))
+    return render_template('editar_cantidad.html', form=form, elemento="días de herramienta", partida=partida_herramienta.partida)
+
+@app.route('/partida/<int:id_partida>/material/<int:id_material>/editar', methods=['GET', 'POST'])
+def editar_material_partida(id_partida, id_material):
+    partida_material = PartidasMateriales.query.filter_by(id_partida=id_partida, id_material=id_material).first_or_404()
+    form = CantidadMaterialForm(obj=partida_material)
+    if form.validate_on_submit():
+        partida_material.cantidad = form.cantidad.data
+        db.session.commit()
+        flash('Cantidad de material actualizada.', 'success')
+        return redirect(url_for('ver_partida', id_partida=id_partida))
+    return render_template('editar_cantidad.html', form=form, elemento="cantidad de material", partida=partida_material.partida)
 
 @app.route('/')
 def home():
