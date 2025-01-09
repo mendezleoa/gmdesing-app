@@ -5,7 +5,6 @@ from flask_sqlalchemy import SQLAlchemy
 from forms import CantidadDiasForm, CantidadHorasForm, CantidadMaterialForm, HerramientaForm, MaterialForm, ObraForm, PartidaForm, ManoObraForm # Importa tus formularios
 import os
 
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'tu_clave_secreta' # Cambiar por una clave segura
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db' # Configura la base de datos
