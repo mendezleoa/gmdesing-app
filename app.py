@@ -2,16 +2,19 @@ from flask import Flask, flash, render_template, Blueprint,abort,request, redire
 from jinja2 import TemplateNotFound
 
 from flask_sqlalchemy import SQLAlchemy
-from forms import CantidadDiasForm, CantidadHorasForm, CantidadMaterialForm, HerramientaForm, MaterialForm, ObraForm, PartidaForm, ManoObraForm # Importa tus formularios
+from flask_migrate import Migrate
+from forms import AsignarManoObraForm, CantidadDiasForm, CantidadHorasForm, CantidadMaterialForm, HerramientaForm, MaterialForm, ObraForm, PartidaForm, ManoObraForm # Importa tus formularios
 import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'tu_clave_secreta' # Cambiar por una clave segura
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db' # Configura la base de datos
 db = SQLAlchemy(app)
+migrate = Migrate(app, db) # Inicializa Flask-Migrate
+
 
 # Importar los modelos DESPUÉS de inicializar db
-from models import Obra, Partida, ManoObra, Herramienta, Material, PartidasManoObra, PartidasHerramientas, PartidasMateriales
+from models import Obra, Partida, ManoDeObra, Herramienta, Material, PartidasManoDeObra, PartidasHerramientas, PartidasMateriales
 
 datos = {
   "sistema": "GMDESING APP",
@@ -81,34 +84,34 @@ def eliminar_obra(id_obra):
 @app.route('/partida/<int:id_partida>')
 def ver_partida(id_partida):
     partida = Partida.query.get_or_404(id_partida)
-    return render_template('ver_partida.html', partida=partida)
+    return render_template('ver_partida.html', partida=partida,datos=datos)
 
 @app.route('/partida/<int:id_partida>/mano_obra/crear', methods=['GET', 'POST'])
 def crear_mano_obra(id_partida):
     partida = Partida.query.get_or_404(id_partida)
     form = ManoObraForm()
     if form.validate_on_submit():
-        mano_obra_existente = ManoObra.query.filter_by(descripcion_mano_obra=form.descripcion_mano_obra.data).first()
+        mano_obra_existente = ManoDeObra.query.filter_by(descripcion_mano_obra=form.descripcion_mano_obra.data).first()
         if mano_obra_existente:
             # Si ya existe la mano de obra, busca la relación en la tabla intermedia
-            partida_mano_obra_existente = PartidasManoObra.query.filter_by(id_partida=id_partida, id_mano_obra=mano_obra_existente.id_mano_obra).first()
+            partida_mano_obra_existente = PartidasManoDeObra.query.filter_by(id_partida=id_partida, id_mano_obra=mano_obra_existente.id_mano_obra).first()
             if partida_mano_obra_existente:
                 flash('Esta mano de obra ya está agregada a esta partida.', 'warning')
                 return redirect(url_for('ver_partida', id_partida=id_partida))
             else:
-                nueva_relacion = PartidasManoObra(id_partida=id_partida, id_mano_obra=mano_obra_existente.id_mano_obra, cantidad_horas=0)
+                nueva_relacion = PartidasManoDeObra(id_partida=id_partida, id_mano_obra=mano_obra_existente.id_mano_obra, cantidad_horas=0)
                 db.session.add(nueva_relacion)
                 db.session.commit()
                 flash('Mano de obra agregada a la partida.', 'success')
                 return redirect(url_for('ver_partida', id_partida=id_partida))
         else:
-            nueva_mano_obra = ManoObra(
+            nueva_mano_obra = ManoDeObra(
                 descripcion_mano_obra=form.descripcion_mano_obra.data,
                 costo_hora=form.costo_hora.data
             )
             db.session.add(nueva_mano_obra)
             db.session.commit()
-            nueva_relacion = PartidasManoObra(id_partida=id_partida, id_mano_obra=nueva_mano_obra.id_mano_obra, cantidad_horas=0)
+            nueva_relacion = PartidasManoDeObra(id_partida=id_partida, id_mano_obra=nueva_mano_obra.id_mano_obra, cantidad_horas=0)
             db.session.add(nueva_relacion)
             db.session.commit()
             flash('Mano de obra creada y agregada a la partida.', 'success')
@@ -213,6 +216,68 @@ def editar_material_partida(id_partida, id_material):
         flash('Cantidad de material actualizada.', 'success')
         return redirect(url_for('ver_partida', id_partida=id_partida))
     return render_template('editar_cantidad.html', form=form, elemento="cantidad de material", partida=partida_material.partida)
+
+# Rutas para Mano de Obra
+@app.route('/mano_de_obra/crear', methods=['GET', 'POST'])
+def crear_mano_de_obra():
+    form = ManoObraForm()
+    if form.validate_on_submit():
+        mano_de_obra = ManoDeObra(
+            nombre_mano_de_obra=form.nombre_mano_de_obra.data,
+            descripcion_mano_de_obra=form.descripcion_mano_de_obra.data,
+            costo_hora=form.costo_hora.data
+        )
+        db.session.add(mano_de_obra)
+        db.session.commit()
+        flash('Mano de obra creada.', 'success')
+        return redirect(url_for('listar_mano_de_obra'))
+    return render_template('crear_mano_de_obra.html', form=form)
+
+@app.route('/mano_de_obra')
+def listar_mano_de_obra():
+    mano_de_obra_lista = ManoDeObra.query.all()
+    return render_template('listar_mano_de_obra.html', mano_de_obra_lista=mano_de_obra_lista)
+
+@app.route('/partida/<int:id_partida>/asignar_mano_de_obra', methods=['GET', 'POST'])
+def asignar_mano_de_obra(id_partida):
+    partida = Partida.query.get_or_404(id_partida)
+    form = AsignarManoObraForm()
+    form.mano_de_obra.choices = [(mo.id_mano_de_obra, mo.nombre_mano_de_obra) for mo in ManoDeObra.query.all()]
+    if form.validate_on_submit():
+        manos_de_obra_seleccionadas = [ManoDeObra.query.get(id_mo) for id_mo in form.mano_de_obra.data]
+        for mano_de_obra in manos_de_obra_seleccionadas:
+            relacion_existente = PartidasManoDeObra.query.filter_by(id_partida=id_partida, id_mano_de_obra=mano_de_obra.id_mano_de_obra).first()
+            if relacion_existente:
+                relacion_existente.cantidad_horas = form.cantidad_horas.data
+                flash(f'Se actualizo la cantidad de horas para {mano_de_obra.nombre_mano_de_obra}', 'success')
+            else:
+                nueva_relacion = PartidasManoDeObra(id_partida=id_partida, id_mano_de_obra=mano_de_obra.id_mano_de_obra, cantidad_horas=form.cantidad_horas.data)
+                db.session.add(nueva_relacion)
+                flash(f'Se asigno {mano_de_obra.nombre_mano_de_obra} a la partida', 'success')
+        db.session.commit()
+        return redirect(url_for('ver_partida', id_partida=id_partida))
+    return render_template('asignar_mano_de_obra.html', form=form, partida=partida)
+
+@app.route('/mano_de_obra/editar/<int:id_mano_de_obra>', methods=['GET', 'POST'])
+def editar_mano_de_obra(id_mano_de_obra):
+    mano_de_obra = ManoDeObra.query.get_or_404(id_mano_de_obra)
+    form = ManoObraForm(obj=mano_de_obra)
+    if form.validate_on_submit():
+        mano_de_obra.nombre_mano_de_obra = form.nombre_mano_de_obra.data
+        mano_de_obra.descripcion_mano_de_obra = form.descripcion_mano_de_obra.data
+        mano_de_obra.costo_hora = form.costo_hora.data
+        db.session.commit()
+        flash('Mano de obra actualizada.', 'success')
+        return redirect(url_for('listar_mano_de_obra'))
+    return render_template('crear_mano_de_obra.html', form=form) # Reutiliza la plantilla de creación
+
+@app.route('/mano_de_obra/eliminar/<int:id_mano_de_obra>')
+def eliminar_mano_de_obra(id_mano_de_obra):
+    mano_de_obra = ManoDeObra.query.get_or_404(id_mano_de_obra)
+    db.session.delete(mano_de_obra)
+    db.session.commit()
+    flash('Mano de obra eliminada.', 'success')
+    return redirect(url_for('listar_mano_de_obra'))
 
 @app.route('/')
 def home():

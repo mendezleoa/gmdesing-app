@@ -1,48 +1,36 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h1>Partida: {{ partida.nombre_partida }}</h1>
-    <p>{{ partida.descripcion_partida }}</p>
 
-    <h2>Mano de Obra:</h2>
-        {% if partida.manos_obra %}
-            <ul>
-                {% for mano_obra_partida in partida.manos_obra %}
-                    <li>{{ mano_obra_partida.mano_obra.descripcion_mano_obra }} - Costo por hora: {{ mano_obra_partida.mano_obra.costo_hora }} - Cantidad de horas: {{ mano_obra_partida.cantidad_horas }}
-                    <a href="{{ url_for('editar_mano_obra_partida', id_partida=partida.id_partida, id_mano_obra=mano_obra_partida.mano_obra.id_mano_obra) }}">Editar cantidad de horas</a></li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No hay mano de obra asignada a esta partida.</p>
-        {% endif %}
-        <a href="{{ url_for('crear_mano_obra', id_partida=partida.id_partida) }}">Agregar Mano de Obra</a>
+<h2>Mano de Obra:</h2>
+{% if partida.manos_obra %}
+    <ul>
+        {% for mano in partida.manos_obra %}
+            <li>{{ mano.nombre_manos_obra }} ({{ partida.partidas_mano_de_obra | selectattr('id_mano_de_obra', 'equalto', mano.id_mano_de_obra) | map(attribute='cantidad_horas') | first }} horas)</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No hay mano de obra asignada.</p>
+{% endif %}
 
-        <h2>Herramientas:</h2>
-        {% if partida.herramientas %}
-            <ul>
-                {% for herramienta_partida in partida.herramientas %}
-                    <li>{{ herramienta_partida.herramienta.nombre_herramienta }} - Costo por día: {{ herramienta_partida.herramienta.costo_alquiler_dia or 'N/A' }} - Cantidad de días: {{ herramienta_partida.cantidad_dias }}
-                    <a href="{{ url_for('editar_herramienta_partida', id_partida=partida.id_partida, id_herramienta=herramienta_partida.herramienta.id_herramienta) }}">Editar cantidad de días</a></li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No hay herramientas asignadas a esta partida.</p>
-        {% endif %}
-        <a href="{{ url_for('crear_herramienta', id_partida=partida.id_partida) }}">Agregar Herramienta</a>
+<h2>Herramientas:</h2>
+{% if partida.herramientas %}
+    <ul>
+        {% for herramienta in partida.herramientas %}
+            <li>{{ herramienta.nombre_herramienta }} ({{ partida.partidas_herramientas | selectattr('id_herramienta', 'equalto', herramienta.id_herramienta) | map(attribute='cantidad_dias') | first }} días)</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No hay herramientas asignadas.</p>
+{% endif %}
 
-        <h2>Materiales:</h2>
-        {% if partida.materiales %}
-            <ul>
-                {% for material_partida in partida.materiales %}
-                    <li>{{ material_partida.material.nombre_material }} - Unidad: {{ material_partida.material.unidad_medida }} - Precio unitario: {{ material_partida.material.precio_unitario }} - Cantidad: {{ material_partida.cantidad }}
-                    <a href="{{ url_for('editar_material_partida', id_partida=partida.id_partida, id_material=material_partida.material.id_material) }}">Editar cantidad</a></li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No hay materiales asignados a esta partida.</p>
-        {% endif %}
-        <a href="{{ url_for('crear_material', id_partida=partida.id_partida) }}">Agregar Material</a>
-            <a href="{{ url_for('ver_obra', id_obra=partida.obra.id_obra) }}">Volver a la obra</a>
-
-    {% endblock %}
-
-{% extends 'base.html' %}
+<h2>Materiales:</h2>
+{% if partida.materiales %}
+    <ul>
+        {% for material in partida.materiales %}
+            <li>{{ material.nombre_material }} ({{ partida.partidas_materiales | selectattr('id_material', 'equalto', material.id_material) | map(attribute='cantidad') | first }} {{ material.unidad_medida }})</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No hay materiales asignados.</p>
+{% endif %}
+{% endblock %}

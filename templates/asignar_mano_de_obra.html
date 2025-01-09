@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Asignar Mano de Obra a {{ partida.nombre_partida }}</h1>
+    <form method="POST">
+        {{ form.csrf_token }}
+        {{ form.mano_de_obra.label }}
+        {{ form.mano_de_obra }}
+        {{ form.cantidad_horas.label }} {{ form.cantidad_horas }}<br>
+        {{ form.submit }}
+    </form>
+        <a href="{{ url_for('ver_partida', id_partida=partida.id_partida) }}">Volver a la partida</a>
+{% endblock %}

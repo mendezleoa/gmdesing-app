@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Lista de Mano de Obra</h1>
+    <ul>
+        {% for mano_de_obra in mano_de_obra_lista %}
+            <li>{{ mano_de_obra.nombre_mano_de_obra }} - {{ mano_de_obra.descripcion_mano_de_obra or "Sin descripción" }} - {{ mano_de_obra.costo_hora or "Sin costo" }}
+                <a href="{{ url_for('editar_mano_de_obra', id_mano_de_obra=mano_de_obra.id_mano_de_obra) }}">Editar</a>
+                <a href="{{ url_for('eliminar_mano_de_obra', id_mano_de_obra=mano_de_obra.id_mano_de_obra) }}">Eliminar</a>
+            </li>
+        {% endfor %}
+    </ul>
+        <a href="{{ url_for('crear_mano_de_obra') }}">Agregar mano de obra</a>
+{% endblock %}
