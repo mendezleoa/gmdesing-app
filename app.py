@@ -57,6 +57,27 @@ def crear_partida(id_obra):
         return redirect(url_for('ver_obra', id_obra=id_obra)) # Redirige a la vista de la obra
     return render_template('crear_partida.html', form=form, obra=obra, datos=datos) # Pasa la obra a la plantilla
 
+@app.route('/obra/editar/<int:id_obra>', methods=['GET', 'POST'])
+def editar_obra(id_obra):
+    obra = Obra.query.get_or_404(id_obra)
+    form = ObraForm(obj=obra) # Pre-carga el formulario con los datos de la obra
+    if form.validate_on_submit():
+        obra.nombre_obra = form.nombre_obra.data
+        obra.descripcion_obra = form.descripcion_obra.data
+        obra.fecha_inicio = form.fecha_inicio.data
+        db.session.commit()
+        flash('Obra actualizada correctamente.', 'success')
+        return redirect(url_for('index'))
+    return render_template('crear_obra.html', form=form, edit=True, obra_id=id_obra, datos=datos) # Reutiliza crear_obra.html
+
+@app.route('/obra/eliminar/<int:id_obra>', methods=['GET'])
+def eliminar_obra(id_obra):
+    obra = Obra.query.get_or_404(id_obra)
+    db.session.delete(obra)
+    db.session.commit()
+    flash('Obra eliminada correctamente.', 'success')
+    return redirect(url_for('index'))
+
 #Ruta para ver partida
 @app.route('/partida/<int:id_partida>')
 def ver_partida(id_partida):

@@ -1,19 +1,51 @@
-{% extends "index.html" %}
+{% extends 'base.html' %}
 {% block content %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Crear Obra</title>
-</head>
-<body>
-    <h1>Crear Nueva Obra</h1>
-    <form method="POST">
-        {{ form.csrf_token }} {# Esto es importante para la seguridad #}
-        {{ form.nombre_obra.label }} {{ form.nombre_obra }}<br>
-        {{ form.descripcion_obra.label }} {{ form.descripcion_obra }}<br>
-        {{ form.fecha_inicio.label }} {{ form.fecha_inicio }}<br>
-        {{ form.submit }}
+    <h1 class="text-2xl font-bold mb-4">{% if edit %}Editar Obra{% else %}Crear Nueva Obra{% endif %}</h1>
+    <form method="POST" class="max-w-md mx-auto bg-white p-6 rounded-md shadow-md">
+        {{ form.csrf_token }}
+
+        <div class="mb-4">
+            {{ form.nombre_obra.label(class="block text-gray-700 font-bold mb-2") }}
+            {{ form.nombre_obra(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+            {% if form.nombre_obra.errors %}
+                <ul class="text-red-500 text-sm mt-1">
+                    {% for error in form.nombre_obra.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            {{ form.descripcion_obra.label(class="block text-gray-700 font-bold mb-2") }}
+            {{ form.descripcion_obra(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+            {% if form.descripcion_obra.errors %}
+                <ul class="text-red-500 text-sm mt-1">
+                    {% for error in form.descripcion_obra.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="mb-6">
+            {{ form.fecha_inicio.label(class="block text-gray-700 font-bold mb-2") }}
+            {{ form.fecha_inicio(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+            {% if form.fecha_inicio.errors %}
+                <ul class="text-red-500 text-sm mt-1">
+                    {% for error in form.fecha_inicio.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="flex items-center justify-between">
+            {{ form.submit(class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline") }}
+            {% if edit %}
+                <a href="{{ url_for('ver_obra', id_obra=obra_id) }}" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">Volver a la obra</a>
+            {% endif %}
+            <a href="{{ url_for('index') }}" class="inline-block align-baseline font-bold text-sm text-gray-500 hover:text-gray-800">Volver a la lista de obras</a>
+        </div>
     </form>
-</body>
-</html>
 {% endblock %}

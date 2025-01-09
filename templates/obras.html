@@ -1,39 +1,67 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h1>Lista de Obras</h1>
+    <h1 class="text-3xl font-bold mb-4">Lista de Obras</h1>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
+                <div class="bg-{{ category }}-100 border border-{{ category }}-400 text-{{ category }}-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong class="font-bold">{{ category.capitalize() }}!</strong>
+                    <span class="block sm:inline">{{ message }}</span>
+                </div>
             {% endfor %}
         {% endif %}
     {% endwith %}
 
     {% if obras %}
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Fecha de Inicio</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for obra in obras %}
-            <tr>
-                <td>{{ obra.nombre_obra }}</td>
-                <td>{{ obra.descripcion_obra }}</td>
-                <td>{{ obra.fecha_inicio }}</td>
-                <td><a href="{{ url_for('ver_obra', id_obra=obra.id_obra) }}">Ver Detalles</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="overflow-x-auto"> {# Para tablas responsivas #}
+        <table class="min-w-full divide-y divide-gray-200 border border-gray-300">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Inicio</th>
+                    <th scope="col" class="px-6 py-3 relative">
+                        <span class="sr-only">Acciones</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for obra in obras %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ obra.nombre_obra }}</td>
+                    <td class="px-6 py-4">{{ obra.descripcion_obra }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ obra.fecha_inicio }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <a href="{{ url_for('ver_obra', id_obra=obra.id_obra) }}" class="text-indigo-600 hover:text-indigo-900 mr-2">Ver Detalles</a>
+                        <a href="{{ url_for('editar_obra', id_obra=obra.id_obra) }}" class="text-yellow-600 hover:text-yellow-900 mr-2">Editar</a>
+                        <button type="button" class="text-red-600 hover:text-red-900" data-bs-toggle="modal" data-bs-target="#confirmDelete{{obra.id_obra}}">Eliminar</button>
+                        <div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="confirmDelete{{obra.id_obra}}" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-modal="true" role="dialog">
+                            <div class="modal-dialog relative w-auto pointer-events-none">
+                                <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                                    <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
+                                        <h5 class="text-xl font-medium leading-normal text-gray-800" id="confirmDeleteLabel">Confirmar eliminación</h5>
+                                        <button type="button" class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body relative p-4">
+                                        ¿Está seguro de que desea eliminar la obra {{obra.nombre_obra}}?
+                                    </div>
+                                    <div class="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-4 border-t border-gray-200 rounded-b-md">
+                                        <button type="button" class="inline-block px-6 py-2.5 bg-gray-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out" data-bs-dismiss="modal">Cancelar</button>
+                                        <a href="{{ url_for('eliminar_obra', id_obra=obra.id_obra) }}" class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out ml-1">Eliminar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
-    <p>No hay obras registradas.</p>
+    <p class="text-gray-600">No hay obras registradas.</p>
     {% endif %}
 
-    <a href="{{ url_for('crear_obra') }}">Crear Nueva Obra</a>
+    <a href="{{ url_for('crear_obra') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 inline-block">Crear Nueva Obra</a>
 {% endblock %}

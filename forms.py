@@ -4,9 +4,9 @@ from wtforms.validators import DataRequired, NumberRange
 
 class ObraForm(FlaskForm):
     nombre_obra = StringField('Nombre de la Obra', validators=[DataRequired()])
-    descripcion_obra = StringField('Descripción de la Obra')
+    descripcion_obra = TextAreaField('Descripción de la Obra')
     fecha_inicio = DateField('Fecha de Inicio', validators=[DataRequired()])
-    submit = SubmitField('Crear Obra')
+    submit = SubmitField('Guardar')
 
 class PartidaForm(FlaskForm):
     nombre_partida = StringField('Nombre de la Partida', validators=[DataRequired()])
