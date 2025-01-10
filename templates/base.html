@@ -44,7 +44,7 @@
         class="fixed inset-y-0 right-0 w-64 bg-blue-950 text-blue-50 transform translate-x-full transition-transform duration-300 ease-in-out md:hidden"">
        <div class=" bg-blue-900 p-4 text-blue-50">
         <div class="flex justify-between items-start mb-4"> <!-- Flex container for the close button -->
-            <img class="rounded-full w-[30%]" bg-black src="/static/img/perfil.jpg" alt="">
+            <img class="rounded-full w-[30%]" bg-black src="/static/img/perfil.png" alt="">
             <button class="text-right" onclick="toggleSidebar()">✖</button> <!-- Close button -->
         </div>
         <div class="flex justify-between items-center mb-4"> <!-- Flex container for the close button -->
@@ -62,10 +62,6 @@
 
     <!-- Main Content -->
     <main class="content col-span-12 md:col-span-10 h-[90vh] p-4 overflow-y-auto scroll-hidden">
-        {% block content %}
-        <h2>Main Content Area</h2>
-        {% endblock %}
-
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         {% for category, message in messages %}
@@ -73,6 +69,11 @@
         {% endfor %}
         {% endif %}
         {% endwith %}
+
+        {% block content %}
+        <h2>Main Content Area</h2>
+        {% endblock %}
+
     </main>
 </body>
 
