@@ -81,6 +81,11 @@ def eliminar_obra(id_obra):
     return redirect(url_for('index'))
 
 #Ruta para ver partida
+@app.route('/partidas')
+def listar_partidas():
+    partidas = Partida.query.all()
+    return render_template('listar_partidas.html', partidas=partidas,datos=datos)
+
 @app.route('/partida/<int:id_partida>')
 def ver_partida(id_partida):
     partida = Partida.query.get_or_404(id_partida)
