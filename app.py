@@ -3,7 +3,7 @@ from jinja2 import TemplateNotFound
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from forms import AsignarManoObraForm, AsignarMaterialesForm, CantidadDiasForm, CantidadHorasForm, CantidadMaterialForm, HerramientaForm, MaterialForm, ObraForm, PartidaForm, ManoObraForm # Importa tus formularios
+from forms import AsignarHerramientasForm, AsignarManoObraForm, AsignarMaterialesForm, CantidadDiasForm, CantidadHorasForm, CantidadMaterialForm, HerramientaForm, MaterialForm, ObraForm, PartidaForm, ManoObraForm # Importa tus formularios
 import os
 
 app = Flask(__name__)
@@ -118,38 +118,6 @@ def crear_mano_obra(id_partida):
             return redirect(url_for('ver_partida', id_partida=id_partida))
 
     return render_template('crear_mano_obra.html', form=form, partida=partida, datos=datos)
-
-# Rutas para Herramientas
-@app.route('/partida/<int:id_partida>/herramienta/crear', methods=['GET', 'POST'])
-def crear_herramienta(id_partida):
-    partida = Partida.query.get_or_404(id_partida)
-    form = HerramientaForm()
-    if form.validate_on_submit():
-        herramienta_existente = Herramienta.query.filter_by(nombre_herramienta=form.nombre_herramienta.data).first()
-        if herramienta_existente:
-            partida_herramienta_existente = PartidasHerramientas.query.filter_by(id_partida=id_partida, id_herramienta=herramienta_existente.id_herramienta).first()
-            if partida_herramienta_existente:
-                flash('Esta herramienta ya está agregada a esta partida.', 'warning')
-                return redirect(url_for('ver_partida', id_partida=id_partida))
-            else:
-                nueva_relacion = PartidasHerramientas(id_partida=id_partida, id_herramienta=herramienta_existente.id_herramienta, cantidad_dias=0)
-                db.session.add(nueva_relacion)
-                db.session.commit()
-                flash('Herramienta agregada a la partida.', 'success')
-                return redirect(url_for('ver_partida', id_partida=id_partida))
-        else:
-            nueva_herramienta = Herramienta(
-                nombre_herramienta=form.nombre_herramienta.data,
-                costo_alquiler_dia=form.costo_alquiler_dia.data
-            )
-            db.session.add(nueva_herramienta)
-            db.session.commit()
-            nueva_relacion = PartidasHerramientas(id_partida=id_partida, id_herramienta=nueva_herramienta.id_herramienta, cantidad_dias=0)
-            db.session.add(nueva_relacion)
-            db.session.commit()
-            flash('Herramienta creada y agregada a la partida.', 'success')
-            return redirect(url_for('ver_partida', id_partida=id_partida))
-    return render_template('crear_herramienta.html', form=form, partida=partida, datos=datos)
 
 # Rutas para Materiales
 @app.route('/partida/<int:id_partida>/material/crear', methods=['GET', 'POST'])
@@ -342,6 +310,68 @@ def eliminar_material(id_material):
     db.session.commit()
     flash('Material  eliminado.', 'success')
     return redirect(url_for('listar_materiales'))
+
+# Rutas para Herramientas
+@app.route('/herramientas')
+def listar_herramientas():
+    herramientas_lista = Herramienta.query.all()
+    return render_template('listar_herramientas.html', herramientas_lista=herramientas_lista, datos=datos)
+
+@app.route('/herramienta/crear', methods=['GET', 'POST'])
+def crear_herramienta():
+    form = HerramientaForm()
+    if form.validate_on_submit():
+        herramienta = Herramienta(
+            nombre_herramienta=form.nombre_herramienta.data,
+            descripcion_herramienta=form.descripcion_herramienta.data,
+            costo_alquiler_dia=form.costo_alquiler_dia.data,
+        )
+        db.session.add(herramienta)
+        db.session.commit()
+        flash('Herramienta creada.', 'success')
+        return redirect(url_for('listar_herramientas'))
+    return render_template('crear_herramienta.html', form=form, datos=datos)
+
+@app.route('/partida/<int:id_partida>/asignar_herramienta', methods=['GET', 'POST'])
+def asignar_herramienta(id_partida):
+    partida = Partida.query.get_or_404(id_partida)
+    form = AsignarHerramientasForm()
+    form.herramientas.choices = [(he.id_herramienta, he.nombre_herramienta) for he in Herramienta.query.all()]
+    if form.validate_on_submit():
+        herramientas_seleccionadas = [Herramienta.query.get(id_he) for id_he in form.herramientas.data]
+        for herramienta in herramientas_seleccionadas:
+            relacion_existente = PartidasHerramientas.query.filter_by(id_partida=id_partida, id_herramienta=herramienta.id_herramienta).first()
+            if relacion_existente:
+                relacion_existente.cantidad_dias = form.cantidad_dias.data
+                flash(f'Se actualizo la cantidad de Días para {herramienta.nombre_herramienta}', 'success')
+            else:
+                nueva_relacion = PartidasHerramientas(id_partida=id_partida, id_herramienta=herramienta.id_herramienta, cantidad_dias=form.cantidad_dias.data)
+                db.session.add(nueva_relacion)
+                flash(f'Se asigno {herramienta.nombre_herramienta} a la partida', 'success')
+        db.session.commit()
+        return redirect(url_for('ver_partida', id_partida=id_partida))
+    return render_template('asignar_herramienta.html', form=form, partida=partida, datos=datos)
+
+@app.route('/herramienta/editar/<int:id_herramienta>', methods=['GET', 'POST'])
+def editar_herramienta(id_herramienta):
+    herramienta = Herramienta.query.get_or_404(id_herramienta)
+    form = HerramientaForm(obj=herramienta)
+    if form.validate_on_submit():
+        herramienta.nombre_herramienta = form.nombre_herramienta.data
+        herramienta.descripcion_herramienta = form.descripcion_herramienta.data
+        herramienta.costo_alquiler_dia = form.costo_alquiler_dia.data
+        db.session.commit()
+        flash('Herramienta actualizada.', 'success')
+        return redirect(url_for('listar_herramientas'))
+    return render_template('crear_herramienta.html', form=form, datos=datos) # Reutiliza la plantilla de creación
+
+@app.route('/herramienta/eliminar/<int:id_herramienta>')
+def eliminar_herramienta(id_herramienta):
+    herramienta = Herramienta.query.get_or_404(id_herramienta)
+    db.session.delete(herramienta)
+    db.session.commit()
+    flash('Herramienta eliminada.', 'success')
+    return redirect(url_for('listar_herramientas'))
 
 @app.route('/')
 def home():
