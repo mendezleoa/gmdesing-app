@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import FloatField, SelectMultipleField, StringField, DateField, SubmitField, TextAreaField,  IntegerField, widgets
+from wtforms import FloatField, SelectField, SelectMultipleField, StringField, DateField, SubmitField, TextAreaField,  IntegerField, widgets
 from wtforms.validators import DataRequired, NumberRange
 
 
@@ -57,7 +57,8 @@ class HerramientaForm(FlaskForm):
 class MaterialForm(FlaskForm):
     nombre_material = StringField('Nombre', validators=[DataRequired()])
     descripcion_material = StringField('Descripción')
-    unidad_medida = StringField('Unidad de Medida', validators=[DataRequired()])
+    #unidad_medida = StringField('Unidad de Medida', validators=[DataRequired()])
+    unidad_medida = SelectField('Unidad de Medida', coerce=int)  # coerce=int para convertir el valor a entero
     precio_unitario = FloatField('Precio Unitario', validators=[DataRequired()])
     submit = SubmitField('Guardar Material')
 

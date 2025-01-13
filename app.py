@@ -14,7 +14,7 @@ migrate = Migrate(app, db) # Inicializa Flask-Migrate
 
 
 # Importar los modelos DESPUÉS de inicializar db
-from models import Obra, Partida, ManoDeObra, Herramienta, Material, PartidasManoDeObra, PartidasHerramientas, PartidasMateriales
+from models import Obra, Partida, ManoDeObra, Herramienta, Material, PartidasManoDeObra, PartidasHerramientas, PartidasMateriales, UnidadMedida
 
 datos = {
   "sistema": "GMDESING APP",
@@ -44,7 +44,7 @@ def ver_obra(id_obra):
     return render_template('ver_obra.html', obra=obra, datos=datos)
 
 @app.route('/obra/<int:id_obra>/partida/crear', methods=['GET', 'POST'])
-def crear_partida(id_obra):
+def crear_partida_obra(id_obra):
     obra = Obra.query.get_or_404(id_obra)
     form = PartidaForm()
     if form.validate_on_submit():
@@ -84,12 +84,46 @@ def eliminar_obra(id_obra):
 @app.route('/partidas')
 def listar_partidas():
     partidas = Partida.query.all()
-    return render_template('listar_partidas.html', partidas=partidas,datos=datos)
+    return render_template('listar_partidas.html', partidas_lista=partidas,datos=datos)
 
 @app.route('/partida/<int:id_partida>')
 def ver_partida(id_partida):
     partida = Partida.query.get_or_404(id_partida)
     return render_template('ver_partida.html', partida=partida,datos=datos)
+
+@app.route('/partida/crear', methods=['GET', 'POST'])
+def crear_partida():
+    form = PartidaForm()
+    if form.validate_on_submit():
+        partida = Partida(
+            nombre_partida=form.nombre_partida.data,
+            descripcion_partida=form.descripcion_partida.data,
+        )
+        db.session.add(partida)
+        db.session.commit()
+        flash('Partida creada.', 'success')
+        return redirect(url_for('listar_partidas'))
+    return render_template('crear_partida.html', form=form, datos=datos)
+
+@app.route('/partida/editar/<int:id_partida>', methods=['GET', 'POST'])
+def editar_partida(id_partida):
+    partida = Partida.query.get_or_404(id_partida)
+    form = PartidaForm(obj=partida)
+    if form.validate_on_submit():
+        partida.nombre_partida = form.nombre_partida.data
+        partida.descripcion_partida = form.descripcion_partida.data
+        db.session.commit()
+        flash('Parida actualizada.', 'success')
+        return redirect(url_for('listar_partidas'))
+    return render_template('crear_partida.html', form=form, datos=datos) # Reutiliza la plantilla de creación
+
+@app.route('/partida/eliminar/<int:id_partida>')
+def eliminar_partida(id_partida):
+    partida = Partida.query.get_or_404(id_partida)
+    db.session.delete(partida)
+    db.session.commit()
+    flash('Partida eliminada.', 'success')
+    return redirect(url_for('listar_partidas'))
 
 @app.route('/partida/<int:id_partida>/mano_obra/crear', methods=['GET', 'POST'])
 def crear_mano_obra(id_partida):
@@ -261,11 +295,14 @@ def listar_materiales():
 @app.route('/material/crear', methods=['GET', 'POST'])
 def crear_material():
     form = MaterialForm()
+    # Cargar las unidades de medida desde la base de datos
+    unidades = UnidadMedida.query.all()
+    form.unidad_medida.choices = [(unidad.id_unidad_medida, unidad.nombre_unidad_medida) for unidad in unidades]
     if form.validate_on_submit():
         material = Material(
             nombre_material=form.nombre_material.data,
             descripcion_material=form.descripcion_material.data,
-            unidad_medida=form.unidad_medida.data,
+            id_unidad_medida=form.unidad_medida.data,
             precio_unitario=form.precio_unitario.data
         )
         db.session.add(material)
