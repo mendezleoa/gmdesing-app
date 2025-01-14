@@ -15,7 +15,7 @@ class Partida(db.Model):
     id_partida = db.Column(db.Integer, primary_key=True)
     nombre_partida = db.Column(db.String(100), nullable=False)
     descripcion_partida = db.Column(db.Text)
-    id_unidad_medida = db.Column(
+    unidad_medida_id = db.Column(
         db.Integer,
         db.ForeignKey('unidad_medida.id_unidad_medida', name='fk_partida_unidad_medida')
     )
@@ -26,9 +26,10 @@ class Partida(db.Model):
     materiales = db.relationship('PartidasMateriales', backref='partida', lazy=True)
 
     unidad_medida = db.relationship('UnidadMedida', backref='partidas')
+    #unidad_medida = db.relationship('UnidadMedida', back_populates="partida", uselist=False, single_parent=True)
 
-    def __repr__(self):
-        return f"<Partida(id={self.id_partida}, nombre={self.nombre_partida})>"
+#    def __repr__(self):
+#        return f"<Partida(id={self.id_partida}, nombre={self.nombre_partida}, um={self.unidad_medida})>"
 
 class ObraPartida(db.Model):
     __tablename__ = 'obras_partidas'
@@ -58,15 +59,17 @@ class Material(db.Model):
     id_material = db.Column(db.Integer, primary_key=True)
     nombre_material = db.Column(db.String(100), nullable=False)
     descripcion_material = db.Column(db.Text)
-    id_unidad_medida = db.Column(
+    unidad_medida_id = db.Column(
         db.Integer,
-        db.ForeignKey('unidad_medida.id_unidad_medida', name='fk_partida_unidad_medida'),
+        db.ForeignKey('unidad_medida.id_unidad_medida', name='fk_material_unidad_medida'),
         nullable=False
     )
     precio_unitario = db.Column(db.Float)
     fecha_registro = db.Column(db.Date)
 
     unidad_medida = db.relationship('UnidadMedida', backref='materiales')
+    #persona = db.relationship('Persona', back_populates="ventas", uselist=False, single_parent=True)
+
 
     def __repr__(self):
         return f"<Partida(id={self.id_partida}, nombre={self.nombre_partida})>"
@@ -96,6 +99,8 @@ class UnidadMedida(db.Model):
     __tablename__ = 'unidad_medida'
     id_unidad_medida = db.Column(db.Integer, primary_key=True)
     nombre_unidad_medida = db.Column(db.String(100), nullable=False)
+    # Relación
+    #partidas = db.relationship('Partida', backref='unidad_medida')
 
-    def __repr__(self):
-        return f"{self.nombre_unidad_medida}"
+#    def __repr__(self):
+#        return f"<UnidadMedida(id={self.id_unidad_medida}, nombre={self.nombre_unidad_medida})>"

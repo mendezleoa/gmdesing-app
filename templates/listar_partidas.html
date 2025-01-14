@@ -10,6 +10,8 @@
                 <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                     <th class="py-3 px-6 text-left">Nombre</th>
                     <th class="py-3 px-6 text-left">Descripción</th>
+                    <th class="py-3 px-6 text-left">Unidad de Medida</th>
+                    <th class="py-3 px-6 text-left">Rendimiento</th>
                     <th class="py-3 px-12 text-center">Acciones</th>
                 </tr>
             </thead>
@@ -18,6 +20,8 @@
                     <tr class="border-b border-gray-200 hover:bg-gray-100">
                         <td class="py-3 px-6">{{ partida.nombre_partida }}</td>
                         <td class="py-3 px-6">{{ partida.descripcion_partida or "Sin descripción" }}</td>
+                        <td class="py-3 px-6">{{ partida.unidad_medida.nombre_unidad_medida or "Sin Und" }}</td>
+                        <td class="py-3 px-6">{{ partida.rendimiento or "Sin Información" }}</td>
                         <td class="py-3 px-6 text-center">
                             <a href="{{ url_for('editar_partida', id_partida=partida.id_partida) }}" class="text-blue-500 hover:text-blue-700">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">

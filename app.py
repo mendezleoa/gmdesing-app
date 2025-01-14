@@ -94,10 +94,15 @@ def ver_partida(id_partida):
 @app.route('/partida/crear', methods=['GET', 'POST'])
 def crear_partida():
     form = PartidaForm()
+    # Cargar las unidades de medida desde la base de datos
+    unidades = UnidadMedida.query.all()
+    form.unidad_medida.choices = [(unidad.id_unidad_medida, unidad.nombre_unidad_medida) for unidad in unidades]
     if form.validate_on_submit():
         partida = Partida(
             nombre_partida=form.nombre_partida.data,
             descripcion_partida=form.descripcion_partida.data,
+            unidad_medida_id=form.unidad_medida.data,
+            rendimiento=form.rendimiento.data
         )
         db.session.add(partida)
         db.session.commit()
@@ -108,10 +113,17 @@ def crear_partida():
 @app.route('/partida/editar/<int:id_partida>', methods=['GET', 'POST'])
 def editar_partida(id_partida):
     partida = Partida.query.get_or_404(id_partida)
+    print("Partida:",partida)
+
     form = PartidaForm(obj=partida)
+    # Cargar las unidades de medida desde la base de datos
+    unidades = UnidadMedida.query.all()
+    form.unidad_medida_id.choices = [(unidad.id_unidad_medida, unidad.nombre_unidad_medida) for unidad in unidades]
     if form.validate_on_submit():
         partida.nombre_partida = form.nombre_partida.data
         partida.descripcion_partida = form.descripcion_partida.data
+        partida.unidad_medida_id=form.unidad_medida_id.data
+        partida.rendimiento=form.rendimiento.data
         db.session.commit()
         flash('Parida actualizada.', 'success')
         return redirect(url_for('listar_partidas'))
@@ -297,12 +309,12 @@ def crear_material():
     form = MaterialForm()
     # Cargar las unidades de medida desde la base de datos
     unidades = UnidadMedida.query.all()
-    form.unidad_medida.choices = [(unidad.id_unidad_medida, unidad.nombre_unidad_medida) for unidad in unidades]
+    form.unidad_medida_id.choices = [(unidad.id_unidad_medida, unidad.nombre_unidad_medida) for unidad in unidades]
     if form.validate_on_submit():
         material = Material(
             nombre_material=form.nombre_material.data,
             descripcion_material=form.descripcion_material.data,
-            id_unidad_medida=form.unidad_medida.data,
+            unidad_medida_id=form.unidad_medida_id.data,
             precio_unitario=form.precio_unitario.data
         )
         db.session.add(material)

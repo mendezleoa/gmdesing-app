@@ -20,7 +20,7 @@
                     <tr class="border-b border-gray-200 hover:bg-gray-100">
                         <td class="py-3 px-6">{{ material.nombre_material }}</td>
                         <td class="py-3 px-6">{{ material.descripcion_material or "Sin descripción" }}</td>
-                        <td class="py-3 px-6">{{ material.unidad_medida or "Sin U/M" }}</td>
+                        <td class="py-3 px-6">{{ material.unidad_medida.nombre_unidad_medida or "Sin Und" }}</td>
                         <td class="py-3 px-6">{{ material.precio_unitario or "Sin precio" }}</td>
                         <td class="py-3 px-6 text-center">
                             <a href="{{ url_for('editar_material', id_material=material.id_material) }}" class="text-blue-500 hover:text-blue-700">
