@@ -1,36 +1,60 @@
 {% extends 'index.html' %}
 {% block content %}
 
-<h2>Mano de Obra:</h2>
-{% if partida.manos_obra %}
-    <ul>
-        {% for mano in partida.manos_obra %}
-            <li>{{ mano.nombre_manos_obra }} ({{ partida.partidas_mano_de_obra | selectattr('id_mano_de_obra', 'equalto', mano.id_mano_de_obra) | map(attribute='cantidad_horas') | first }} horas)</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No hay mano de obra asignada.</p>
-{% endif %}
+<div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold mb-4">Detalles de la Partida: {{ partida.nombre_partida }} - {{ partida.descripcion_partida }}</h1>
 
-<h2>Herramientas:</h2>
-{% if partida.herramientas %}
-    <ul>
-        {% for herramienta in partida.herramientas %}
-            <li>{{ herramienta.nombre_herramienta }} ({{ partida.partidas_herramientas | selectattr('id_herramienta', 'equalto', herramienta.id_herramienta) | map(attribute='cantidad_dias') | first }} días)</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No hay herramientas asignadas.</p>
-{% endif %}
+    <div id="manoDeObra" class="mb-6">
+        <h2 class="text-xl font-semibold mb-2">Mano de Obra</h2>
+        <ul class="list-disc pl-5 mb-4">
+            {% for mano in mano_de_obra %}
+                <li class="mb-1">{{ mano.nombre_mano_de_obra }}</li>
+            {% endfor %}
+        </ul>
+        <form method="POST" class="flex items-center">
+            <input type="text" name="nombre_trabajador" placeholder="Nombre de la Mano de Obra" required class="border border-gray-300 rounded-l-md p-2 flex-grow">
+            <button type="submit" name="agregar_mano_de_obra" class="bg-blue-500 text-white rounded-r-md px-4 hover:bg-blue-600 transition">Agregar Mano de Obra</button>
+        </form>
+    </div>
 
-<h2>Materiales:</h2>
-{% if partida.materiales %}
-    <ul>
-        {% for material in partida.materiales %}
-            <li>{{ material.nombre_material }} ({{ partida.partidas_materiales | selectattr('id_material', 'equalto', material.id_material) | map(attribute='cantidad') | first }} {{ material.unidad_medida }})</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No hay materiales asignados.</p>
-{% endif %}
+    <div id="materiales" class="mb-6">
+        <h2 class="text-xl font-semibold mb-2">Materiales</h2>
+        <ul class="list-disc pl-5 mb-4">
+            {% for material in partida.materiales %}
+                <li class="mb-1">{{ material }}</li>
+            {% endfor %}
+        </ul>
+        <form method="POST" class="flex items-center">
+            <select name="id_material" required class="border border-gray-300 rounded-l-md p-2 flex-grow">
+                <option value="">Selecciona un Material</option>
+                {% for material in materiales %}
+                    <option value="{{ material.id_material }}">{{ material.nombre_material }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" name="agregar_material" class="bg-blue-500 text-white rounded-r-md px-4 hover:bg-blue-600 transition">Agregar Material</button>
+        </form>
+    </div>
+
+    <div id="herramientas" class="mb-6">
+        <h2 class="text-xl font-semibold mb-2">Herramientas</h2>
+        <ul class="list-disc pl-5 mb-4">
+            {% for herramienta in partida.herramientas %}
+                <li class="mb-1">{{ herramienta.nombre_herramienta }}</li>
+            {% endfor %}
+        </ul>
+        <form method="POST" class="flex items-center">
+            <select name="herramienta_id" required class="border border-gray-300 rounded-l-md p-2 flex-grow">
+                <option value="">Selecciona una herramienta</option>
+                {% for herramienta in herramientas %}
+                    <option value="{{ herramienta.id_herramienta }}">{{ herramienta.nombre_herramienta }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" name="agregar_herramienta" class="bg-blue-500 text-white rounded-r-md px-4 hover:bg-blue-600 transition">Agregar Herramienta</button>
+        </form>
+    </div>
+</div>
+
+    <a href="{{ url_for('listar_partidas') }}" class="inline-block mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">Volver al listado de partidas</a>
+</div>
+
 {% endblock %}

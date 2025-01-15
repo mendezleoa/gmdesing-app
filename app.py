@@ -86,22 +86,49 @@ def listar_partidas():
     partidas = Partida.query.all()
     return render_template('listar_partidas.html', partidas_lista=partidas,datos=datos)
 
-@app.route('/partida/<int:id_partida>')
-def ver_partida(id_partida):
-    partida = Partida.query.get_or_404(id_partida)
-    return render_template('ver_partida.html', partida=partida,datos=datos)
+@app.route('/ver_partida/<int:id>', methods=['GET', 'POST'])
+def ver_partida(id):
+    #partida = Partida.query.get(id)
+    partida = Partida.query.get_or_404(id)
+    materiales = Material.query.order_by("nombre_material").all()  # Obtener materiales
+    herramientas = Herramienta.query.order_by("nombre_herramienta").all()  # Obtener herramientas
+    mano_de_obra = ManoDeObra.query.order_by("nombre_mano_de_obra").all()  # Obtener mano de obra 
+    #materiales = PartidasMateriales.query.filter_by(id_partida=id).all()  # Obtener materiales de la partida
+    #herramientas = PartidasHerramientas.query.filter_by(id_partida=id).all()  # Obtener herramientas de la partida
+    #mano_de_obra = PartidasManoDeObra.query.filter_by(id_partida=id).all()  # Obtener mano de obra de la partida
+
+    if request.method == 'POST':
+        if 'agregar_material' in request.form:
+            nuevo_material = PartidasMateriales(id_material=request.form['id_material'], id_partida=id, cantidad = 1)
+            db.session.add(nuevo_material)
+            db.session.commit()
+            flash('Material agregado exitosamente.', 'success')
+        elif 'agregar_herramienta' in request.form:
+            herramienta_id = request.form['herramienta_id']
+            herramienta = Herramienta.query.get(herramienta_id)
+            partida.herramientas.append(herramienta)  # Asociar la herramienta a la partida
+            db.session.commit()
+            flash('Herramienta agregada exitosamente.', 'success')
+        elif 'agregar_mano_de_obra' in request.form:
+            nueva_mano_de_obra = ManoDeObra(nombre_trabajador=request.form['nombre_trabajador'], partida_id=id)
+            db.session.add(nueva_mano_de_obra)
+            db.session.commit()
+            flash('Mano de obra agregada exitosamente.', 'success')
+
+
+    return render_template('ver_partida.html', partida=partida, materiales=materiales, herramientas=herramientas, mano_de_obra=mano_de_obra, datos=datos)
 
 @app.route('/partida/crear', methods=['GET', 'POST'])
 def crear_partida():
     form = PartidaForm()
     # Cargar las unidades de medida desde la base de datos
     unidades = UnidadMedida.query.all()
-    form.unidad_medida.choices = [(unidad.id_unidad_medida, unidad.nombre_unidad_medida) for unidad in unidades]
+    form.unidad_medida_id.choices = [(unidad.id_unidad_medida, unidad.nombre_unidad_medida) for unidad in unidades]
     if form.validate_on_submit():
         partida = Partida(
             nombre_partida=form.nombre_partida.data,
             descripcion_partida=form.descripcion_partida.data,
-            unidad_medida_id=form.unidad_medida.data,
+            unidad_medida_id=form.unidad_medida_id.data,
             rendimiento=form.rendimiento.data
         )
         db.session.add(partida)

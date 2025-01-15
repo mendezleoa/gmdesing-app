@@ -23,13 +23,19 @@
                         <td class="py-3 px-6">{{ partida.unidad_medida.nombre_unidad_medida or "Sin Und" }}</td>
                         <td class="py-3 px-6">{{ partida.rendimiento or "Sin Información" }}</td>
                         <td class="py-3 px-6 text-center">
-                            <a href="{{ url_for('editar_partida', id_partida=partida.id_partida) }}" class="text-blue-500 hover:text-blue-700">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <a href="{{ url_for('ver_partida', id=partida.id_partida) }}" class="text-blue-500 hover:text-blue-700" title="Ver Detalles">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8M13 12h8m-8 5h8M3 7h.01M3 12h.01M3 17h.01" />
                                 </svg>
                             </a>
-                            <a href="{{ url_for('eliminar_partida', id_partida=partida.id_partida) }}" class="text-red-500 hover:text-red-700 ml-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <a href="{{ url_for('editar_partida', id_partida=partida.id_partida) }}" class="text-blue-500 hover:text-blue-700" title="Editar">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232a1.5 1.5 0 00-2.121 0L5 13.586V17h3.414l8.111-8.111a1.5 1.5 0 000-2.121l-1.172-1.172z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 3.5l1.5 1.5-3 3-1.5-1.5 3-3z" />
+                                </svg>
+                            </a>
+                            <a href="{{ url_for('eliminar_partida', id_partida=partida.id_partida) }}" class="text-red-500 hover:text-red-700 ml-2" title="Eliminar">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </a>

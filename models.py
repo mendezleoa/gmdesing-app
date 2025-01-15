@@ -26,6 +26,7 @@ class Partida(db.Model):
     materiales = db.relationship('PartidasMateriales', backref='partida', lazy=True)
 
     unidad_medida = db.relationship('UnidadMedida', backref='partidas')
+
     #unidad_medida = db.relationship('UnidadMedida', back_populates="partida", uselist=False, single_parent=True)
 
 #    def __repr__(self):
@@ -68,11 +69,13 @@ class Material(db.Model):
     fecha_registro = db.Column(db.Date)
 
     unidad_medida = db.relationship('UnidadMedida', backref='materiales')
+    partidas_materiales = db.relationship('PartidasMateriales', backref='material')
+
     #persona = db.relationship('Persona', back_populates="ventas", uselist=False, single_parent=True)
 
 
-    def __repr__(self):
-        return f"<Partida(id={self.id_partida}, nombre={self.nombre_partida})>"
+    #def __repr__(self):
+    #    return f"<Partida(id={self.id_partida}, nombre={self.nombre_partida})>"
 
 class PartidasManoDeObra(db.Model):
     __tablename__ = 'partidas_mano_de_obra'
@@ -94,6 +97,11 @@ class PartidasMateriales(db.Model):
     id_partida = db.Column(db.Integer, db.ForeignKey('partida.id_partida', name='fk_partidas_materiales_partida'), nullable=False)
     id_material = db.Column(db.Integer, db.ForeignKey('material.id_material', name='fk_partidas_materiales_material'), nullable=False)
     cantidad = db.Column(db.Float)
+
+    #partida = db.relationship('Partida', backref='partidas_materiales')
+
+    def __repr__(self):
+        return f"<P_Material(id={self.id_material}, partida={self.partida}, material={self.material.nombre_material}, material={self.cantidad})>"
 
 class UnidadMedida(db.Model):
     __tablename__ = 'unidad_medida'
