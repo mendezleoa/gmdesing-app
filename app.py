@@ -98,22 +98,21 @@ def ver_partida(id):
     #mano_de_obra = PartidasManoDeObra.query.filter_by(id_partida=id).all()  # Obtener mano de obra de la partida
 
     if request.method == 'POST':
-        if 'agregar_material' in request.form:
-            nuevo_material = PartidasMateriales(id_material=request.form['id_material'], id_partida=id, cantidad = 1)
+        if 'agregar_mano_de_obra' in request.form:
+            nueva_mano_de_obra = PartidasManoDeObra(id_mano_de_obra=request.form['id_mano_de_obra'], id_partida=id, cantidad = request.form['cantidad'])
+            db.session.add(nueva_mano_de_obra)
+            db.session.commit()
+            flash('Mano de obra agregada exitosamente.', 'success')
+        elif 'agregar_material' in request.form:
+            nuevo_material = PartidasMateriales(id_material=request.form['id_material'], id_partida=id, cantidad = request.form['cantidad'])
             db.session.add(nuevo_material)
             db.session.commit()
             flash('Material agregado exitosamente.', 'success')
         elif 'agregar_herramienta' in request.form:
-            herramienta_id = request.form['herramienta_id']
-            herramienta = Herramienta.query.get(herramienta_id)
-            partida.herramientas.append(herramienta)  # Asociar la herramienta a la partida
+            nuevo_herramienta = PartidasHerramientas(id_herramienta=request.form['id_herramienta'], id_partida=id, cantidad = request.form['cantidad'])
+            db.session.add(nuevo_herramienta)
             db.session.commit()
             flash('Herramienta agregada exitosamente.', 'success')
-        elif 'agregar_mano_de_obra' in request.form:
-            nueva_mano_de_obra = ManoDeObra(nombre_trabajador=request.form['nombre_trabajador'], partida_id=id)
-            db.session.add(nueva_mano_de_obra)
-            db.session.commit()
-            flash('Mano de obra agregada exitosamente.', 'success')
 
 
     return render_template('ver_partida.html', partida=partida, materiales=materiales, herramientas=herramientas, mano_de_obra=mano_de_obra, datos=datos)
@@ -374,10 +373,13 @@ def asignar_material(id_partida):
 def editar_material(id_material):
     material = Material.query.get_or_404(id_material)
     form = MaterialForm(obj=material)
+    # Cargar las unidades de medida desde la base de datos
+    unidades = UnidadMedida.query.all()
+    form.unidad_medida_id.choices = [(unidad.id_unidad_medida, unidad.nombre_unidad_medida) for unidad in unidades]
     if form.validate_on_submit():
         material.nombre_material = form.nombre_material.data
         material.descripcion_material = form.descripcion_material.data
-        material.unidad_medida = form.unidad_medida.data
+        material.unidad_medida_id = form.unidad_medida_id.data
         material.precio_unitario = form.precio_unitario.data
         db.session.commit()
         flash('Material actualizado.', 'success')

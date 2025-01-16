@@ -21,7 +21,7 @@ class Partida(db.Model):
     )
     rendimiento = db.Column(db.Integer)
     obras = db.relationship('ObraPartida', back_populates='partida', lazy='dynamic')  # Relación con Obras
-    manos_obra = db.relationship('PartidasManoDeObra', backref='partida', lazy=True)
+    mano_de_obra = db.relationship('PartidasManoDeObra', backref='partida', lazy=True)
     herramientas = db.relationship('PartidasHerramientas', backref='partida', lazy=True)
     materiales = db.relationship('PartidasMateriales', backref='partida', lazy=True)
 
@@ -47,12 +47,16 @@ class ManoDeObra(db.Model):
     descripcion_mano_de_obra = db.Column(db.Text)
     costo_hora = db.Column(db.Float)
 
+    partidas_mano_de_obra = db.relationship('PartidasManoDeObra', backref='mano_de_obra')
+
 class Herramienta(db.Model):
     __tablename__ = 'herramienta'
     id_herramienta = db.Column(db.Integer, primary_key=True)
     nombre_herramienta = db.Column(db.String(100), nullable=False)
     descripcion_herramienta = db.Column(db.Text)
     costo_alquiler_dia = db.Column(db.Float)
+
+    partidas_herramientas = db.relationship('PartidasHerramientas', backref='herramienta')
 
 
 class Material(db.Model):
@@ -82,14 +86,14 @@ class PartidasManoDeObra(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_partida = db.Column(db.Integer, db.ForeignKey('partida.id_partida', name='fk_partidas_mano_de_obra_partida'), nullable=False)
     id_mano_de_obra = db.Column(db.Integer, db.ForeignKey('mano_de_obra.id_mano_de_obra', name='fk_partidas_mano_de_obra_mano_de_obra'), nullable=False)
-    cantidad_horas = db.Column(db.Float)
+    cantidad = db.Column(db.Float)
 
 class PartidasHerramientas(db.Model):
     __tablename__ = 'partidas_herramientas'
     id = db.Column(db.Integer, primary_key=True)
     id_partida = db.Column(db.Integer, db.ForeignKey('partida.id_partida', name='fk_partidas_herramientas_partida'), nullable=False)
     id_herramienta = db.Column(db.Integer, db.ForeignKey('herramienta.id_herramienta', name='fk_partidas_herramientas_herramienta'), nullable=False)
-    cantidad_dias = db.Column(db.Float)
+    cantidad = db.Column(db.Float)
 
 class PartidasMateriales(db.Model):
     __tablename__ = 'partidas_materiales'

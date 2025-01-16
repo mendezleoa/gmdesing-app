@@ -2,59 +2,153 @@
 {% block content %}
 
 <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-    <h1 class="text-2xl font-bold mb-4">Detalles de la Partida: {{ partida.nombre_partida }} - {{ partida.descripcion_partida }}</h1>
+    <h1 class="text-2xl font-bold mb-4">Detalles de la Partida: {{ partida.nombre_partida }} - {{
+        partida.descripcion_partida }}</h1>
 
-    <div id="manoDeObra" class="mb-6">
+    <div id="materiales" class="mb-6">
         <h2 class="text-xl font-semibold mb-2">Mano de Obra</h2>
-        <ul class="list-disc pl-5 mb-4">
-            {% for mano in mano_de_obra %}
-                <li class="mb-1">{{ mano.nombre_mano_de_obra }}</li>
-            {% endfor %}
-        </ul>
+        {% if partida.mano_de_obra %}
+        <div class="overflow-x-auto mb-2">
+            <table class="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
+                <thead class="ltr:text-left rtl:text-right">
+                    <tr>
+                        <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Nombre</th>
+                        <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Descripción</th>
+                        <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Costo/Hora</th>
+                        <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Cantidad</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-gray-200">
+                    {% for mano in partida.mano_de_obra %}
+                    <tr class="odd:bg-gray-50">
+                        <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{
+                            mano.mano_de_obra.nombre_mano_de_obra }}</td>
+                        <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{
+                            mano.mano_de_obra.descripcion_mano_de_obra }}</td>
+                        <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ mano.mano_de_obra.costo_hora }}</td>
+                        <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ mano.cantidad }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
         <form method="POST" class="flex items-center">
-            <input type="text" name="nombre_trabajador" placeholder="Nombre de la Mano de Obra" required class="border border-gray-300 rounded-l-md p-2 flex-grow">
-            <button type="submit" name="agregar_mano_de_obra" class="bg-blue-500 text-white rounded-r-md px-4 hover:bg-blue-600 transition">Agregar Mano de Obra</button>
+            <select name="id_mano_de_obra" required class="border border-gray-300 rounded-l-md p-2 flex-grow">
+                <option value="">Seleccione</option>
+                {% for mano in mano_de_obra %}
+                <option value="{{ mano.id_mano_de_obra }}">{{ mano.nombre_mano_de_obra }}</option>
+                {% endfor %}
+            </select>
+            <input type="number" value="1" name="cantidad" id="cantidad"
+                class='border ml-2 border-gray-300 rounded-l-md p-2 flex-grow' />
+            <button type="submit" name="agregar_mano_de_obra"
+                class="bg-blue-500 ml-2 text-white rounded-r-md px-4 hover:bg-blue-600 transition">Agregar
+                Mano de Obra</button>
         </form>
     </div>
 
     <div id="materiales" class="mb-6">
         <h2 class="text-xl font-semibold mb-2">Materiales</h2>
-        <ul class="list-disc pl-5 mb-4">
-            {% for material in partida.materiales %}
-                <li class="mb-1">{{ material }}</li>
-            {% endfor %}
-        </ul>
+        {% if partida.materiales %}
+        <div class="overflow-x-auto mb-2">
+            <table class="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
+                <thead class="ltr:text-left rtl:text-right">
+                    <tr>
+                        <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Nombre</th>
+                        <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Unidad de Medida</th>
+                        <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Cantidad</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-gray-200">
+                    {% for material in partida.materiales %}
+                    <tr class="odd:bg-gray-50">
+                        <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{
+                            material.material.nombre_material }}</td>
+                        <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{
+                            material.material.unidad_medida.nombre_unidad_medida }}</td>
+                        <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ material.cantidad }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
         <form method="POST" class="flex items-center">
             <select name="id_material" required class="border border-gray-300 rounded-l-md p-2 flex-grow">
                 <option value="">Selecciona un Material</option>
                 {% for material in materiales %}
-                    <option value="{{ material.id_material }}">{{ material.nombre_material }}</option>
+                <option value="{{ material.id_material }}">{{ material.nombre_material }}</option>
                 {% endfor %}
             </select>
-            <button type="submit" name="agregar_material" class="bg-blue-500 text-white rounded-r-md px-4 hover:bg-blue-600 transition">Agregar Material</button>
+            <input type="number" value="1" name="cantidad" id="cantidad"
+                class='border ml-2 border-gray-300 rounded-l-md p-2 flex-grow' />
+            <button type="submit" name="agregar_material"
+                class="bg-blue-500 ml-2 text-white rounded-r-md px-4 hover:bg-blue-600 transition">Agregar
+                Material</button>
         </form>
     </div>
 
     <div id="herramientas" class="mb-6">
-        <h2 class="text-xl font-semibold mb-2">Herramientas</h2>
-        <ul class="list-disc pl-5 mb-4">
-            {% for herramienta in partida.herramientas %}
-                <li class="mb-1">{{ herramienta.nombre_herramienta }}</li>
-            {% endfor %}
-        </ul>
+        <h2 class="text-xl font-semibold mb-2">Equipos y Herramientas</h2>
+        {% if partida.herramientas %}
+        <div class="overflow-x-auto mb-2">
+            <table class="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
+                <thead class="ltr:text-left rtl:text-right">
+                    <tr>
+                        <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Nombre</th>
+                        <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Descripción</th>
+                        <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Costo/Día</th>
+                        <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Cantidad</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-gray-200">
+                    {% for herramienta in partida.herramientas %}
+                    <tr class="odd:bg-gray-50">
+                        <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">{{
+                            herramienta.herramienta.nombre_herramienta }}</td>
+                        <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{
+                            herramienta.herramienta.descripcion_herramienta }}</td>
+                        <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{
+                            herramienta.herramienta.costo_alquiler_dia }}</td>
+                        <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{ herramienta.cantidad }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
         <form method="POST" class="flex items-center">
-            <select name="herramienta_id" required class="border border-gray-300 rounded-l-md p-2 flex-grow">
-                <option value="">Selecciona una herramienta</option>
+            <select name="id_herramienta" required class="border border-gray-300 rounded-l-md p-2 flex-grow">
+                <option value="">Selecciona un Material</option>
                 {% for herramienta in herramientas %}
-                    <option value="{{ herramienta.id_herramienta }}">{{ herramienta.nombre_herramienta }}</option>
+                <option value="{{ herramienta.id_herramienta }}">{{ herramienta.nombre_herramienta }}</option>
                 {% endfor %}
             </select>
-            <button type="submit" name="agregar_herramienta" class="bg-blue-500 text-white rounded-r-md px-4 hover:bg-blue-600 transition">Agregar Herramienta</button>
+            <input type="number" value="1" name="cantidad" id="cantidad"
+                class='border ml-2 border-gray-300 rounded-l-md p-2 flex-grow' />
+            <button type="submit" name="agregar_herramienta"
+                class="bg-blue-500 ml-2 text-white rounded-r-md px-6 py-2 hover:bg-blue-600 rounded-lg transition font-bold">+</button>
+
+            <button data-tooltip-target="tooltip-default" type="button"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Default
+                tooltip</button>
+
+            <div id="tooltip-default" role="tooltip"
+                class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                Tooltip content
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
         </form>
     </div>
 </div>
 
-    <a href="{{ url_for('listar_partidas') }}" class="inline-block mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">Volver al listado de partidas</a>
+<a href="{{ url_for('listar_partidas') }}"
+    class="inline-block mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">Volver al listado de
+    partidas</a>
 </div>
 
 {% endblock %}
