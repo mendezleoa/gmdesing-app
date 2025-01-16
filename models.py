@@ -24,7 +24,6 @@ class Partida(db.Model):
     mano_de_obra = db.relationship('PartidasManoDeObra', backref='partida', lazy=True)
     herramientas = db.relationship('PartidasHerramientas', backref='partida', lazy=True)
     materiales = db.relationship('PartidasMateriales', backref='partida', lazy=True)
-
     unidad_medida = db.relationship('UnidadMedida', backref='partidas')
 
     #unidad_medida = db.relationship('UnidadMedida', back_populates="partida", uselist=False, single_parent=True)
