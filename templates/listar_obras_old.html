@@ -1,0 +1,43 @@
+{% extends 'index.html' %}
+{% import 'componentes/tabla.html' as macros %}
+
+{% block content %}
+    <h1 class="text-3xl font-bold mb-4">Lista de Obras</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+ <div class="bg-{{ category }}-100 border border-{{ category }}-400 text-{{ category }}-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong class="font-bold">{{ category.capitalize() }}!</strong>
+                    <span class="block sm:inline">{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if obras %}
+    <div class="overflow-x-auto"> {# Para tablas responsivas #}
+        <table class="min-w-full divide-y divide-gray-200 border border-gray-300">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Inicio</th>
+                    <th scope="col" class="px-6 py-3 relative">
+                        <span class="sr-only">Acciones</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for obra in obras %}
+                    {{ macros.render_fila_obra(obra) }}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-gray-600">No hay obras registradas.</p>
+    {% endif %}
+
+    <a href="{{ url_for('crear_obra') }}" class="bg-green-500 hover:bg-green-700 text-slate-800 font-bold py-2 px-4 rounded mt-4 inline-block">Crear Nueva Obra</a>
+{% endblock %}

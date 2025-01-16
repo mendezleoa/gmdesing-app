@@ -26,7 +26,10 @@ datos = {
 @app.route('/obras')
 def index():
     obras = Obra.query.all()
-    return render_template('obras.html', obras=obras, datos=datos) # Pasa las obras a la plantilla
+    headers = ['Nombre', 'Descripción', 'Fecha de Inicio']
+    #rows = [(obra.nombre_obra, obra.descripcion_obra, obra.fecha_inicio) for obra in obras]
+    return render_template('listar_obras.html', headers=headers, obras=obras, datos=datos)
+    #return render_template('listar_obras.html', obras=obras, datos=datos) # Pasa las obras a la plantilla
 
 @app.route('/obras/crear', methods=['GET', 'POST'])
 def crear_obra():

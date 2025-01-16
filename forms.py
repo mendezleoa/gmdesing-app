@@ -14,26 +14,26 @@ class PartidaForm(FlaskForm):
     descripcion_partida = TextAreaField('Descripción de la Partida')
     unidad_medida_id = SelectField('Unidad de Medida', coerce=int)  # coerce=int para convertir el valor a entero
     rendimiento = FloatField('Rendimiento', validators=[DataRequired()])
-    submit = SubmitField('Guardar Partida')
+    submit = SubmitField('Guardar')
 
 class ManoObraForm(FlaskForm):
     nombre_mano_de_obra = StringField('Nombre', validators=[DataRequired()])
     descripcion_mano_de_obra = StringField('Descripción')
     costo_hora = FloatField('Costo por Hora')
-    submit = SubmitField('Guardar Mano de Obra')
+    submit = SubmitField('Guardar')
 
 class HerramientaForm(FlaskForm):
     nombre_herramienta = StringField('Nombre', validators=[DataRequired()])
     descripcion_herramienta = StringField('Descripción')
     costo_alquiler_dia = FloatField('Costo de Alquiler por Día')
-    submit = SubmitField('Guardar Herramienta')
+    submit = SubmitField('Guardar')
 
 class MaterialForm(FlaskForm):
     nombre_material = StringField('Nombre', validators=[DataRequired()])
     descripcion_material = StringField('Descripción')
     unidad_medida_id = SelectField('Unidad de Medida', coerce=int)  # coerce=int para convertir el valor a entero
     precio_unitario = FloatField('Precio Unitario', validators=[DataRequired()])
-    submit = SubmitField('Guardar Material')
+    submit = SubmitField('Guardar')
 class CantidadHorasForm(FlaskForm):
     cantidad_horas = FloatField('Cantidad de Horas', validators=[DataRequired(), NumberRange(min=0)])
     submit = SubmitField('Guardar')

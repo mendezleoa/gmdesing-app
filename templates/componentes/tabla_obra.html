@@ -1,0 +1,33 @@
+{% macro render_fila_obra(obra) %}
+<tr>
+    <td class="px-6 py-4 whitespace-nowrap">{{ obra.nombre_obra }}</td>
+    <td class="px-6 py-4">{{ obra.descripcion_obra }}</td>
+    <td class="px-6 py-4 whitespace-nowrap">{{ obra.fecha_inicio }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+        <a href="{{ url_for('ver_obra', id_obra=obra.id_obra) }}" class="text-indigo-600 hover:text-indigo-900 mr-2">Ver Detalles</a>
+        <a href="{{ url_for('editar_obra', id_obra=obra.id_obra) }}" class="text-yellow-600 hover:text-yellow-900 mr-2">Editar</a>
+        <button type="button" class="text-red-600 hover:text-red-900" data-bs-toggle="modal" data-bs-target="#confirmDelete{{ obra.id_obra }}">Eliminar</button>
+        {{ render_modal_confirmar_eliminacion(obra) }}
+    </td>
+</tr>
+{% endmacro %}
+
+{% macro render_modal_confirmar_eliminacion(obra) %}
+<div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="confirmDelete{{ obra.id_obra }}" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog relative w-auto pointer-events-none">
+        <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+            <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
+                <h5 class="text-xl font-medium leading-normal text-gray-800" id="confirmDeleteLabel">Confirmar eliminación</h5>
+                <button type="button" class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body relative p-4">
+                ¿Está seguro de que desea eliminar la obra {{ obra.nombre_obra }}?
+            </div>
+            <div class="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-4 border-t border-gray-200 rounded-b-md">
+                <button type="button" class="inline-block px-6 py-2.5 bg-gray-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out" data-bs-dismiss="modal">Cancelar</button>
+                <a href="{{ url_for('eliminar_obra', id_obra=obra.id_obra) }}" class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out ml-1">Eliminar</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}
