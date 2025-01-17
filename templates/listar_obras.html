@@ -23,6 +23,7 @@
             {% set action = {
                 'ver': url_for('ver_obra', id_obra=obra.id_obra),
                 'editar': url_for('editar_obra', id_obra=obra.id_obra),
+                'eliminar': url_for('eliminar_obra', id_obra=obra.id_obra),
                 'id': obra.id_obra,
                 'nombre': obra.nombre_obra
             } %}

@@ -1,52 +1,54 @@
 {% macro render_table(headers, rows) %}
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 border border-gray-300">
-            <thead class="bg-gray-50">
-                <tr>
-                    {% for header in headers %}
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ header }}
-                        </th>
-                    {% endfor %}
-                    <th scope="col" class="px-6 py-3 relative">
-                        <span class="sr-only">Acciones</span>
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                {% for row, action in rows %}
-                    <tr>
-                        {% for item in row %}
-                            <td class="px-6 py-4 whitespace-nowrap">{{ item }}</td>
-                        {% endfor %}
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <a href="{{ action.ver }}" class="text-indigo-600 hover:text-indigo-900 mr-2">Ver</a>
-                            <a href="{{ action.editar }}" class="text-yellow-600 hover:text-yellow-900 mr-2">Editar</a>
-                            <button type="button" class="text-red-600 hover:text-red-900" data-bs-toggle="modal" data-bs-target="#confirmDelete{{ action.id }}">Eliminar</button>
-                            {{ render_modal_confirmar_eliminacion(action.id, action.nombre) }}
-                        </td>
-                    </tr>
+<div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 border border-gray-300">
+        <thead class="bg-gray-50">
+            <tr>
+                {% for header in headers %}
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {{ header }}
+                </th>
                 {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                <th scope="col" class="px-6 py-3 relative text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Acciones
+                </th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            {% for row, action in rows %}
+            <tr>
+                {% for item in row %}
+                <td class="px-6 py-4 whitespace-nowrap">{{ item }}</td>
+                {% endfor %}
+                <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                    {% if action.ver %}
+                        <a href="{{ action.ver }}" class="text-indigo-600 hover:text-indigo-900 mr-2">Ver</a>
+                    {% endif %}
+                    <a href="{{ action.editar }}" class="text-yellow-400 hover:text-yellow-600 mr-2">Editar</a>
+                    <button type="button" class="text-red-600 hover:text-red-900" data-bs-toggle="modal"
+                        data-bs-target="#confirmDelete {{ action.id }} " onclick="openModal()">Eliminar</button>
+                    {{ render_modal_confirmar_eliminacion(action.id, action.nombre, action.eliminar) }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endmacro %}
 
-{% macro render_modal_confirmar_eliminacion(id, nombre) %}
-<div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="confirmDelete{{ id }}" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-modal="true" role="dialog">
-    <div class="modal-dialog relative w-auto pointer-events-none">
-        <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-            <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
-                <h5 class="text-xl font-medium leading-normal text-gray-800" id="confirmDeleteLabel">Confirmar eliminación</h5>
-                <button type="button" class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body relative p-4">
-                ¿Está seguro de que desea eliminar la obra {{ nombre }}?
-            </div>
-            <div class="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-4 border-t border-gray-200 rounded-b-md">
-                <button type="button" class="inline-block px-6 py-2.5 bg-gray-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out" data-bs-dismiss="modal">Cancelar</button>
-                <a href="{{ url_for('eliminar_obra', id_obra=id) }}" class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out ml-1">Eliminar</a>
-            </div>
+{% macro render_modal_confirmar_eliminacion(id, nombre, eliminar) %}
+<div class="fixed inset-0 flex items-center justify-center z-50 hidden" id="modal">
+    <div class="absolute inset-0 bg-black opacity-50" onclick="closeModal()"></div>
+    <div class="bg-white rounded-lg shadow-lg z-10 w-1/3">
+        <div class="flex justify-between items-center p-4 border-b">
+            <h5 class="text-lg font-semibold">Confirmar eliminación</h5>
+            <button class="text-gray-500 hover:text-gray-700" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="p-4">
+            <p>¿Está seguro de que desea eliminar este elemento?</p>
+        </div>
+        <div class="flex justify-end p-4 border-t">
+            <button class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700" onclick="closeModal()">Cancelar</button>
+            <a href="{{ eliminar }}" class="ml-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Eliminar</a>
         </div>
     </div>
 </div>

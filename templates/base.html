@@ -62,19 +62,12 @@
 
     <!-- Main Content -->
     <main class="content col-span-12 md:col-span-10 h-[90vh] p-4 overflow-y-auto scroll-hidden">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }}">{{ message }}</div>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
-
         {% block content %}
         <h2>Main Content Area</h2>
         {% endblock %}
 
     </main>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>    
 </body>
 
 </html>

@@ -87,7 +87,8 @@ def eliminar_obra(id_obra):
 @app.route('/partidas')
 def listar_partidas():
     partidas = Partida.query.all()
-    return render_template('listar_partidas.html', partidas_lista=partidas,datos=datos)
+    headers = ['Nombre', 'Descripción', 'Unidad de Medida','Rendimiento']
+    return render_template('listar_partidas.html', headers=headers,partidas=partidas,datos=datos)
 
 @app.route('/ver_partida/<int:id>', methods=['GET', 'POST'])
 def ver_partida(id):
@@ -331,7 +332,8 @@ def eliminar_mano_de_obra(id_mano_de_obra):
 @app.route('/materiales')
 def listar_materiales():
     materiales_lista = Material.query.all()
-    return render_template('listar_materiales.html', materiales_lista=materiales_lista, datos=datos)
+    headers = ['Nombre', 'Descripción', 'Unidad de Medida', 'Precio Unitario']
+    return render_template('listar_materiales.html',headers=headers, materiales_lista=materiales_lista, datos=datos)
 
 @app.route('/material/crear', methods=['GET', 'POST'])
 def crear_material():
@@ -401,7 +403,8 @@ def eliminar_material(id_material):
 @app.route('/herramientas')
 def listar_herramientas():
     herramientas_lista = Herramienta.query.all()
-    return render_template('listar_herramientas.html', herramientas_lista=herramientas_lista, datos=datos)
+    headers = ['Nombre', 'Descripción', 'Costo/Día']
+    return render_template('listar_herramientas.html', headers=headers, herramientas_lista=herramientas_lista, datos=datos)
 
 @app.route('/herramienta/crear', methods=['GET', 'POST'])
 def crear_herramienta():

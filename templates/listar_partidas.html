@@ -1,52 +1,39 @@
 {% extends 'index.html' %}
+{% import 'componentes/tabla.html' as macros %}
 
 {% block content %}
-    <h1 class="text-2xl font-bold mb-4">Lista de Partidas</h1>
+    <h1 class="text-3xl font-bold mb-4">Lista de Partidas</h1>
 
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-200">
-            <thead>
-                <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                    <th class="py-3 px-6 text-left">Nombre</th>
-                    <th class="py-3 px-6 text-left">Descripción</th>
-                    <th class="py-3 px-6 text-left">Unidad de Medida</th>
-                    <th class="py-3 px-6 text-left">Rendimiento</th>
-                    <th class="py-3 px-12 text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody class="text-gray-600 text-sm font-light">
-                {% for partida in partidas_lista %}
-                    <tr class="border-b border-gray-200 hover:bg-gray-100">
-                        <td class="py-3 px-6">{{ partida.nombre_partida }}</td>
-                        <td class="py-3 px-6">{{ partida.descripcion_partida or "Sin descripción" }}</td>
-                        <td class="py-3 px-6">{{ partida.unidad_medida.nombre_unidad_medida or "Sin Und" }}</td>
-                        <td class="py-3 px-6">{{ partida.rendimiento or "Sin Información" }}</td>
-                        <td class="py-3 px-6 text-center">
-                            <a href="{{ url_for('ver_partida', id=partida.id_partida) }}" class="text-blue-500 hover:text-blue-700" title="Ver Detalles">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8M13 12h8m-8 5h8M3 7h.01M3 12h.01M3 17h.01" />
-                                </svg>
-                            </a>
-                            <a href="{{ url_for('editar_partida', id_partida=partida.id_partida) }}" class="text-blue-500 hover:text-blue-700" title="Editar">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232a1.5 1.5 0 00-2.121 0L5 13.586V17h3.414l8.111-8.111a1.5 1.5 0 000-2.121l-1.172-1.172z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 3.5l1.5 1.5-3 3-1.5-1.5 3-3z" />
-                                </svg>
-                            </a>
-                            <a href="{{ url_for('eliminar_partida', id_partida=partida.id_partida) }}" class="text-red-500 hover:text-red-700 ml-2" title="Eliminar">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="bg-{{ category }}-100 border border-{{ category }}-400 text-{{ category }}-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong class="font-bold">{{ category.capitalize() }}!</strong>
+                    <span class="block sm:inline">{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-    <div class="mt-4">
-        <a href="{{ url_for('crear_partida') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Agregar partida</a>
-    </div>
+    {% if partidas %}
+        {% set rows = [] %}
 
+        {% for partida in partidas %}
+            {% set row = (partida.nombre_partida, partida.descripcion_partida, partida.unidad_medida_id, partida.rendimiento) %}
+            {% set action = {
+                'ver': url_for('ver_partida', id=partida.id_partida),
+                'editar': url_for('editar_partida', id_partida=partida.id_partida),
+                'eliminar': url_for('eliminar_partida', id_partida=partida.id_partida),
+                'id': partida.id_partida,
+                'nombre': partida.nombre_partida
+            } %}
+            {% set _ = rows.append((row, action)) %}
+        {% endfor %}
+
+        {{ macros.render_table(headers, rows) }}
+    {% else %}
+        <p class="text-gray-600">No hay partidas registradas.</p>
+    {% endif %}
+
+    <a href="{{ url_for('crear_partida') }}" class="bg-green-500 hover:bg-green-700 text-slate-800 font-bold py-2 px-4 rounded mt-4 inline-block">Crear Nueva Partida</a>
 {% endblock %}
