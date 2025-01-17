@@ -18,19 +18,19 @@ class PartidaForm(FlaskForm):
 
 class ManoObraForm(FlaskForm):
     nombre_mano_de_obra = StringField('Nombre', validators=[DataRequired()])
-    descripcion_mano_de_obra = StringField('Descripción')
+    descripcion_mano_de_obra = TextAreaField('Descripción')
     costo_hora = FloatField('Costo por Hora')
     submit = SubmitField('Guardar')
 
 class HerramientaForm(FlaskForm):
     nombre_herramienta = StringField('Nombre', validators=[DataRequired()])
-    descripcion_herramienta = StringField('Descripción')
+    descripcion_herramienta = TextAreaField('Descripción')
     costo_alquiler_dia = FloatField('Costo de Alquiler por Día')
     submit = SubmitField('Guardar')
 
 class MaterialForm(FlaskForm):
     nombre_material = StringField('Nombre', validators=[DataRequired()])
-    descripcion_material = StringField('Descripción')
+    descripcion_material = TextAreaField('Descripción')
     unidad_medida_id = SelectField('Unidad de Medida', coerce=int)  # coerce=int para convertir el valor a entero
     precio_unitario = FloatField('Precio Unitario', validators=[DataRequired()])
     submit = SubmitField('Guardar')

@@ -19,7 +19,7 @@
         {% set rows = [] %}
 
         {% for partida in partidas %}
-            {% set row = (partida.nombre_partida, partida.descripcion_partida, partida.unidad_medida_id, partida.rendimiento) %}
+            {% set row = (partida.nombre_partida, partida.descripcion_partida, partida.unidad_medida.nombre_unidad_medida or "Sin Und", partida.rendimiento) %}
             {% set action = {
                 'ver': url_for('ver_partida', id=partida.id_partida),
                 'editar': url_for('editar_partida', id_partida=partida.id_partida),

@@ -162,9 +162,15 @@ def editar_partida(id_partida):
 @app.route('/partida/eliminar/<int:id_partida>')
 def eliminar_partida(id_partida):
     partida = Partida.query.get_or_404(id_partida)
-    db.session.delete(partida)
-    db.session.commit()
-    flash('Partida eliminada.', 'success')
+    if partida:
+        if partida.obra:
+            flash('No se puede eliminar porque tiene obras asociadas.', 'warning')
+        else:
+            db.session.delete(partida)
+            db.session.commit()
+            flash('Partida eliminada.', 'success')
+    else:
+        flash('No se puede eliminar porque tiene partidas asociadas.', 'warning')
     return redirect(url_for('listar_partidas'))
 
 @app.route('/partida/<int:id_partida>/mano_obra/crear', methods=['GET', 'POST'])
@@ -270,7 +276,8 @@ def editar_material_partida(id_partida, id_material):
 @app.route('/mano_de_obra')
 def listar_mano_de_obra():
     mano_de_obra_lista = ManoDeObra.query.all()
-    return render_template('listar_mano_de_obra.html', mano_de_obra_lista=mano_de_obra_lista, datos=datos)
+    headers = ['Nombre', 'Descripción', 'Costo por Hora']
+    return render_template('listar_mano_de_obra.html', headers=headers, mano_de_obra_lista=mano_de_obra_lista, datos=datos)
 
 @app.route('/mano_de_obra/crear', methods=['GET', 'POST'])
 def crear_mano_de_obra():
@@ -323,9 +330,15 @@ def editar_mano_de_obra(id_mano_de_obra):
 @app.route('/mano_de_obra/eliminar/<int:id_mano_de_obra>')
 def eliminar_mano_de_obra(id_mano_de_obra):
     mano_de_obra = ManoDeObra.query.get_or_404(id_mano_de_obra)
-    db.session.delete(mano_de_obra)
-    db.session.commit()
-    flash('Mano de obra eliminada.', 'success')
+    if mano_de_obra:
+        if mano_de_obra.partidas_mano_de_obra:
+            flash('No se puede eliminar porque tiene partidas asociadas.', 'warning')
+        else:
+            db.session.delete(mano_de_obra)
+            db.session.commit()
+            flash('Mano de obra eliminada.', 'success')
+    else:
+        flash('No se puede eliminar porque tiene partidas asociadas.', 'warning')
     return redirect(url_for('listar_mano_de_obra'))
 
 # Rutas para Material
@@ -394,9 +407,15 @@ def editar_material(id_material):
 @app.route('/material/eliminar/<int:id_material>')
 def eliminar_material(id_material):
     material = Material.query.get_or_404(id_material)
-    db.session.delete(material)
-    db.session.commit()
-    flash('Material  eliminado.', 'success')
+    if material:
+        if material.partidas_material:
+            flash('No se puede eliminar porque tiene partidas asociadas.', 'warning')
+        else:
+            db.session.delete(material)
+            db.session.commit()
+            flash('Material  eliminado.', 'success')
+    else:
+        flash('No se puede eliminar porque tiene partidas asociadas.', 'warning')
     return redirect(url_for('listar_materiales'))
 
 # Rutas para Herramientas
@@ -457,9 +476,15 @@ def editar_herramienta(id_herramienta):
 @app.route('/herramienta/eliminar/<int:id_herramienta>')
 def eliminar_herramienta(id_herramienta):
     herramienta = Herramienta.query.get_or_404(id_herramienta)
-    db.session.delete(herramienta)
-    db.session.commit()
-    flash('Herramienta eliminada.', 'success')
+    if herramienta:
+        if herramienta.partidas_herramientas:
+            flash('No se puede eliminar porque tiene partidas asociadas.', 'warning')
+        else:
+            db.session.delete(herramienta)
+            db.session.commit()
+            flash('Herramienta eliminada.', 'success')
+    else:
+        flash('No se puede eliminar porque tiene partidas asociadas.', 'warning')
     return redirect(url_for('listar_herramientas'))
 
 @app.route('/')

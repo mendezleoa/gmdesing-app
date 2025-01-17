@@ -15,10 +15,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function openModal() {
-    document.getElementById('modal').classList.remove('hidden');
+function openModal(id, nombre, eliminarUrl) {
+    // Actualiza el contenido del modal
+    document.getElementById('modalMessage').innerText = `¿Está seguro de que desea eliminar ${nombre}?`;
+    document.getElementById('deleteLink').setAttribute('href', eliminarUrl);
+
+    // Muestra el modal
+    const modal = document.getElementById('confirmDeleteModal');
+    modal.classList.remove('hidden'); // Quita la clase 'hidden'
+    modal.classList.add('flex'); // Agrega la clase 'flex'
 }
 
 function closeModal() {
-    document.getElementById('modal').classList.add('hidden');
+    // Oculta el modal
+    const modal = document.getElementById('confirmDeleteModal');
+    modal.classList.add('hidden'); // Agrega la clase 'hidden'
+    modal.classList.remove('flex'); // Quita la clase 'flex'
 }
