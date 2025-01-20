@@ -163,7 +163,7 @@ def editar_partida(id_partida):
 def eliminar_partida(id_partida):
     partida = Partida.query.get_or_404(id_partida)
     if partida:
-        if partida.obra:
+        if partida.obras:
             flash('No se puede eliminar porque tiene obras asociadas.', 'warning')
         else:
             db.session.delete(partida)
@@ -408,7 +408,7 @@ def editar_material(id_material):
 def eliminar_material(id_material):
     material = Material.query.get_or_404(id_material)
     if material:
-        if material.partidas_material:
+        if material.partidas_materiales:
             flash('No se puede eliminar porque tiene partidas asociadas.', 'warning')
         else:
             db.session.delete(material)
